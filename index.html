@@ -161,7 +161,7 @@ footer select{font:inherit;color:var(--ink);background:var(--surface);border:1px
 .rstatus{font-size:.88rem;color:var(--muted)}
 
 /* tabs and progress */
-.tabs{display:grid;grid-template-columns:1fr 1fr;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:4px;gap:4px}
+.tabs{display:grid;grid-template-columns:1fr 1fr 1fr;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:4px;gap:4px}
 .tabs button{border:0;background:none;color:var(--muted);font:600 .95rem var(--body);padding:9px 0;border-radius:9px;cursor:pointer}
 .tabs button[aria-selected="true"]{background:var(--accent);color:var(--accent-ink)}
 .tabs button:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
@@ -199,6 +199,31 @@ footer select{font:inherit;color:var(--ink);background:var(--surface);border:1px
 .legend2{display:flex;flex-wrap:wrap;gap:12px;font-size:.78rem;color:var(--muted)}
 .legend2 span{display:inline-flex;align-items:center;gap:5px}
 .legend2 i{width:10px;height:10px;border-radius:2px;display:inline-block}
+
+/* bookshelf */
+.filters{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;scrollbar-width:none}
+.filters::-webkit-scrollbar{display:none}
+.filters .chip{flex:none}
+.filters .chip[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent);opacity:1}
+.filters .chip[aria-pressed="false"]{opacity:1}
+.shelf{display:flex;flex-direction:column;gap:12px}
+.bookcard{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:8px}
+.bookcard h3{font-family:var(--display);font-weight:600;font-size:1.15rem;margin:0;line-height:1.25}
+.bookcard .by{font-size:.88rem;color:var(--muted)}
+.meta{display:flex;flex-wrap:wrap;gap:6px;font-size:.78rem}
+.meta span{background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:2px 9px;color:var(--muted)}
+.meta .stars{color:var(--warm);border-color:var(--warm-soft);background:var(--warm-soft);font-weight:600}
+.bookcard p{margin:0;font-size:.95rem}
+.bookcard .conn{font-size:.9rem;border-left:3px solid var(--accent);padding-left:10px;color:var(--ink)}
+.status-seg{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:3px}
+.status-seg button{border:0;background:none;color:var(--muted);font:600 .8rem var(--body);padding:7px 2px;border-radius:7px;cursor:pointer}
+.status-seg button[aria-pressed="true"]{background:var(--surface);color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.12)}
+.status-seg button[data-s="done"][aria-pressed="true"]{background:var(--done-soft);color:var(--done)}
+.bookcard .actions2{display:flex;flex-wrap:wrap;gap:14px;align-items:center}
+.addform{display:flex;flex-direction:column;gap:8px}
+.addform input,.addform select,.addform textarea{box-sizing:border-box;width:100%;font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.addform textarea{min-height:70px;resize:vertical}
+.shelf-count{font-size:.85rem;color:var(--muted);margin:0}
 </style>
 </head>
 <body>
@@ -214,6 +239,7 @@ footer select{font:inherit;color:var(--ink);background:var(--surface);border:1px
   <div class="tabs" role="tablist">
     <button type="button" role="tab" id="tab-today" aria-selected="true">Today</button>
     <button type="button" role="tab" id="tab-progress" aria-selected="false">Progress</button>
+    <button type="button" role="tab" id="tab-books" aria-selected="false">Books</button>
   </div>
 
   <div class="view" id="view-today">
@@ -255,7 +281,7 @@ footer select{font:inherit;color:var(--ink);background:var(--surface);border:1px
   </section>
 
   <section class="block">
-    <span class="eyebrow">Where it happened</span>
+    <span class="eyebrow" id="map-anchor">Where it happened</span>
     <div class="map-card">
       <div class="map-top">
         <div class="seg" role="group" aria-label="Map view">
@@ -270,6 +296,7 @@ footer select{font:inherit;color:var(--ink);background:var(--surface);border:1px
       </div>
       <div class="map-box" id="map-box"><div class="map-loading" id="map-loading">Loading the map</div></div>
       <div class="map-foot">
+        <div class="rrow" id="map-book" hidden><b id="map-book-title" style="font-size:.9rem"></b><button class="linkbtn" type="button" id="map-back">Back to the Bookshelf</button></div>
         <div class="places" id="place-chips" aria-label="Places in this chapter"></div>
         <p class="count" id="map-count" hidden></p>
         <div class="legend" id="legend" aria-label="Journeys"></div>
@@ -356,6 +383,30 @@ footer select{font:inherit;color:var(--ink);background:var(--surface);border:1px
     <section class="block">
       <span class="eyebrow">Book by book</span>
       <div class="pcard"><div class="books" id="p-books-grid"></div></div>
+    </section>
+  </div>
+
+  <div class="view" id="view-books" hidden>
+    <section class="block">
+      <span class="eyebrow">Bookshelf</span>
+      <div class="filters" id="era-filters" aria-label="Filter by era"></div>
+      <div class="filters" id="status-filters" aria-label="Filter by status"></div>
+      <p class="shelf-count" id="shelf-count"></p>
+    </section>
+    <div class="shelf" id="shelf"></div>
+    <section class="block">
+      <span class="eyebrow">Add a book</span>
+      <div class="pcard">
+        <div class="addform" id="add-form">
+          <input id="nb-title" type="text" maxlength="80" placeholder="Title">
+          <input id="nb-author" type="text" maxlength="60" placeholder="Author">
+          <select id="nb-era" aria-label="Era"></select>
+          <input id="nb-pairs" type="text" maxlength="80" placeholder="Bible passages it pairs with (optional)">
+          <textarea id="nb-notes" maxlength="400" placeholder="Why you want to read it, or notes (optional)"></textarea>
+          <button class="btn mark" type="button" id="nb-add" style="flex:none">Add to my shelf</button>
+          <p class="hint" id="nb-msg" hidden></p>
+        </div>
+      </div>
     </section>
   </div>
 
@@ -485,6 +536,7 @@ footer select{font:inherit;color:var(--ink);background:var(--surface);border:1px
     renderTogether();
     mapRender();
     if(typeof renderProgress==="function")renderProgress();
+    if(typeof renderShelf==="function")renderShelf();
   }
 
   function renderTogether(){
@@ -519,12 +571,15 @@ footer select{font:inherit;color:var(--ink);background:var(--surface);border:1px
   var view="today";
   function openChapter(i){sel=i;placeSel=null;setView("today");render();mapFrame(true);window.scrollTo({top:0,behavior:"smooth"})}
   function setView(v){
-    view=v;$("view-today").hidden=v!=="today";$("view-progress").hidden=v!=="progress";
-    $("tab-today").setAttribute("aria-selected",v==="today");$("tab-progress").setAttribute("aria-selected",v==="progress");
+    view=v;$("view-today").hidden=v!=="today";$("view-progress").hidden=v!=="progress";$("view-books").hidden=v!=="books";
+    $("tab-today").setAttribute("aria-selected",v==="today");$("tab-progress").setAttribute("aria-selected",v==="progress");$("tab-books").setAttribute("aria-selected",v==="books");
     if(v==="progress")renderProgress();
+    if(v==="books")renderShelf();
+    if(v!=="today"&&mapMode==="book")setMode("today");
   }
   $("tab-today").addEventListener("click",function(){setView("today")});
   $("tab-progress").addEventListener("click",function(){setView("progress");window.scrollTo({top:0})});
+  $("tab-books").addEventListener("click",function(){setView("books");window.scrollTo({top:0})});
   function dateOf(i){var w=Math.floor(i/5),d=i%5;return new Date(START.getFullYear(),START.getMonth(),START.getDate()+w*7+d)}
   function fmtDate(d){return d.toLocaleDateString(undefined,{weekday:"long",month:"long",day:"numeric",year:"numeric"})}
   function renderProgress(){
@@ -589,8 +644,92 @@ footer select{font:inherit;color:var(--ink);background:var(--surface);border:1px
       $("cal-l"+h).textContent=a.toLocaleDateString(undefined,f)+" to "+z.toLocaleDateString(undefined,f);
     });
   }
+
+  /* ---------- Bookshelf ---------- */
+  var shelf=null,eraFilter="any",statusFilter="any";
+  var STATUS=[["want","Want to read"],["reading","Reading"],["done","Finished"]];
+  function bookStatus(id){return state.done["book:"+id]||""}
+  function myBooks(){var out=[];for(var k in state.done){if(k.indexOf("mybook:")===0){try{var b=JSON.parse(state.done[k]);b.id=k.slice(7);b.mine=true;out.push(b)}catch(e){}}}return out.sort(function(a,b){return (a.added||"")<(b.added||"")?-1:1})}
+  function setDone(key,val){
+    var next={};for(var k in state.done)next[k]=state.done[k];
+    if(val===null)delete next[key];else next[key]=val;
+    state={done:next};lsSet2("brp-progress",JSON.stringify(state));save();
+  }
+  function lsSet2(k,v){try{localStorage.setItem(k,v)}catch(e){}}
+  function allBooks(){return (shelf?shelf.books:[]).concat(myBooks())}
+  function eraName(id){var e=shelf&&shelf.eras.filter(function(x){return x.id===id})[0];return e?e.name:"Other"}
+  function renderShelf(){
+    if(view!=="books"||!shelf)return;
+    var ef=$("era-filters");ef.innerHTML="";
+    [{id:"any",name:"All eras"}].concat(shelf.eras).forEach(function(e){
+      var b=document.createElement("button");b.type="button";b.className="chip";b.textContent=e.name;
+      b.setAttribute("aria-pressed",eraFilter===e.id?"true":"false");
+      b.addEventListener("click",function(){eraFilter=e.id;renderShelf()});ef.appendChild(b);
+    });
+    var sf=$("status-filters");sf.innerHTML="";
+    [["any","All books"]].concat(STATUS).forEach(function(s){
+      var b=document.createElement("button");b.type="button";b.className="chip";b.textContent=s[1];
+      b.setAttribute("aria-pressed",statusFilter===s[0]?"true":"false");
+      b.addEventListener("click",function(){statusFilter=s[0];renderShelf()});sf.appendChild(b);
+    });
+    var list=allBooks().filter(function(b){return (eraFilter==="any"||b.era===eraFilter)&&(statusFilter==="any"||bookStatus(b.id)===statusFilter)});
+    var cnt={want:0,reading:0,done:0};allBooks().forEach(function(b){var st=bookStatus(b.id);if(cnt[st]!==undefined)cnt[st]++});
+    $("shelf-count").textContent=allBooks().length+" books · "+cnt.reading+" reading · "+cnt.done+" finished · "+cnt.want+" want to read";
+    var box=$("shelf");box.innerHTML="";
+    if(!list.length){var e=document.createElement("p");e.className="hint";e.textContent="No books match these filters.";box.appendChild(e)}
+    list.forEach(function(b){
+      var c=document.createElement("article");c.className="bookcard";
+      var h=document.createElement("h3");h.textContent=b.title;c.appendChild(h);
+      var by=document.createElement("span");by.className="by";by.textContent=b.author||"";c.appendChild(by);
+      var meta=document.createElement("div");meta.className="meta";
+      function tag(t,cls){var sp=document.createElement("span");if(cls)sp.className=cls;sp.textContent=t;meta.appendChild(sp)}
+      if(b.rating)tag("★ "+b.rating.toFixed(2)+" on Goodreads","stars");
+      tag(eraName(b.era));if(b.pairs)tag(b.pairs);if(b.mine)tag("Added by you");
+      c.appendChild(meta);
+      if(b.review){var r=document.createElement("p");r.textContent=b.review;c.appendChild(r)}
+      if(b.bible){var cn=document.createElement("p");cn.className="conn";cn.textContent=b.bible;c.appendChild(cn)}
+      if(b.notes){var nt=document.createElement("p");nt.className="conn";nt.textContent=b.notes;c.appendChild(nt)}
+      var seg=document.createElement("div");seg.className="status-seg";seg.setAttribute("role","group");seg.setAttribute("aria-label","Reading status");
+      STATUS.forEach(function(s){
+        var bt=document.createElement("button");bt.type="button";bt.textContent=s[1];bt.dataset.s=s[0];
+        var on=bookStatus(b.id)===s[0];bt.setAttribute("aria-pressed",on?"true":"false");
+        bt.addEventListener("click",function(){setDone("book:"+b.id,on?null:s[0]);renderShelf()});
+        seg.appendChild(bt);
+      });
+      c.appendChild(seg);
+      var act=document.createElement("div");act.className="actions2";
+      if(b.places&&b.places.length&&geo){
+        var mb=document.createElement("button");mb.type="button";mb.className="linkbtn";mb.textContent="See places on the map";
+        mb.addEventListener("click",function(){showBookOnMap(b)});act.appendChild(mb);
+      }
+      if(b.mine){
+        var del=document.createElement("button");del.type="button";del.className="linkbtn";del.textContent="Remove from my shelf";
+        del.addEventListener("click",function(){
+          if(del.dataset.confirm){setDone("mybook:"+b.id,null);setDone("book:"+b.id,null);renderShelf()}
+          else{del.dataset.confirm="1";del.textContent="Tap again to remove"}
+        });act.appendChild(del);
+      }
+      if(act.children.length)c.appendChild(act);
+      box.appendChild(c);
+    });
+  }
+  function fillEraSelect(){
+    var sel2=$("nb-era");sel2.innerHTML="";
+    shelf.eras.forEach(function(e){var o=document.createElement("option");o.value=e.id;o.textContent=e.name+" ("+e.when+")";sel2.appendChild(o)});
+  }
+  $("nb-add").addEventListener("click",function(){
+    var t=$("nb-title").value.trim(),msg=$("nb-msg");
+    if(!t){$("nb-title").focus();return}
+    var id=Date.now().toString(36);
+    var data={title:t,author:$("nb-author").value.trim(),era:$("nb-era").value,pairs:$("nb-pairs").value.trim(),notes:$("nb-notes").value.trim(),added:iso(new Date())};
+    setDone("mybook:"+id,JSON.stringify(data));setDone("book:"+id,"want");
+    ["nb-title","nb-author","nb-pairs","nb-notes"].forEach(function(x){$(x).value=""});
+    msg.hidden=false;msg.textContent="Added \u201c"+t+"\u201d to your shelf as Want to read.";
+    eraFilter="any";statusFilter="any";renderShelf();
+  });
+  $("map-back").addEventListener("click",function(){setMode("today");setView("books");window.scrollTo({top:0})});
   /* ---------- Map ---------- */
-  var mapMode="today", placeSel=null, hiddenJ={};
+  var mapMode="today", placeSel=null, hiddenJ={}, bookKeys=[], bookTitle="";
   var svg=null,gBase=null,gLegs=null,gPins=null,proj=null,zoom=null,curT=null,W=0,H=0;
 
   function readSet(){ // chapters read, by name
@@ -635,6 +774,7 @@ footer select{font:inherit;color:var(--ink);background:var(--surface);border:1px
     if(!svg)return;
     var keys;
     if(placeSel)keys=[placeSel];
+    else if(mapMode==="book")keys=bookKeys;
     else if(mapMode==="today")keys=placesFor(CH[sel]);
     else{var r=readSet(),s={};for(var n in r)placesFor(n).forEach(function(k){s[k]=1});keys=Object.keys(s);if(!keys.length)keys=placesFor(CH[sel])}
     var xs=[],ys=[];keys.forEach(function(k){var p=pt(k);xs.push(p[0]);ys.push(p[1])});
@@ -652,7 +792,7 @@ footer select{font:inherit;color:var(--ink);background:var(--surface);border:1px
     gLegs.selectAll("*").remove();
     var read=readSet(),cur=CH[sel],line=d3.line();
     geo.journeys.forEach(function(j){
-      if(hiddenJ[j.id])return;
+      if(hiddenJ[j.id]||mapMode==="book")return;
       j.legs.forEach(function(l){
         var isRead=!!read[l.ch],isCur=l.ch===cur,cls="leg";
         if(mapMode==="today"){if(!isCur&&!isRead)return;if(!isCur)cls+=" dim"}
@@ -665,11 +805,11 @@ footer select{font:inherit;color:var(--ink);background:var(--surface);border:1px
   function drawPins(){
     if(!gPins)return;
     gPins.selectAll("*").remove();
-    var cur=placesFor(CH[sel]),read=readSet(),seen={};
+    var cur=mapMode==="book"?bookKeys:placesFor(CH[sel]),read=readSet(),seen={};
     for(var n in read)placesFor(n).forEach(function(k){seen[k]=1});
     var keys=Object.keys(geo.places),list=[];
     keys.forEach(function(k){
-      var main=mapMode==="today"?cur.indexOf(k)>=0:(seen[k]||cur.indexOf(k)>=0);
+      var main=mapMode!=="all"?cur.indexOf(k)>=0:(seen[k]||cur.indexOf(k)>=0);
       var faint=!main&&(mapMode==="all"||seen[k]);
       if(!main&&!faint&&k!==placeSel)return;
       list.push({k:k,main:main||k===placeSel});
@@ -680,7 +820,7 @@ footer select{font:inherit;color:var(--ink);background:var(--surface);border:1px
     list.slice().sort(function(a,b){return (b.k===placeSel)-(a.k===placeSel)||(cur.indexOf(b.k)>=0)-(cur.indexOf(a.k)>=0)}).forEach(function(o){
       if(!o.main)return;
       var xy=pt(o.k),x=curT.applyX(xy[0]),y=curT.applyY(xy[1]);
-      if(!(mapMode==="today"||o.k===placeSel||curT.k>6))return;
+      if(!(mapMode!=="all"||o.k===placeSel||curT.k>6))return;
       var r={x:x-4,y:y-9,w:14+short(geo.places[o.k].n).length*6.3,h:16};
       for(var i=0;i<boxes.length;i++){var b=boxes[i];if(r.x<b.x+b.w&&b.x<r.x+r.w&&r.y<b.y+b.h&&b.y<r.y+r.h)return}
       boxes.push(r);labelOK[o.k]=1;
@@ -715,7 +855,8 @@ footer select{font:inherit;color:var(--ink);background:var(--surface);border:1px
   function renderChips(){
     var box=$("place-chips");box.innerHTML="";
     if(!geo)return;
-    var cur=placesFor(CH[sel]);
+    var cur=mapMode==="book"?bookKeys:placesFor(CH[sel]);
+    $("map-book").hidden=mapMode!=="book";$("legend").hidden=mapMode==="book";if(mapMode==="book")$("map-book-title").textContent="Places in "+bookTitle;
     cur.forEach(function(k){
       var b=document.createElement("button");b.type="button";b.className="chip place";
       b.setAttribute("aria-pressed",placeSel===k?"true":"false");
@@ -726,7 +867,8 @@ footer select{font:inherit;color:var(--ink);background:var(--surface);border:1px
     var cnt=$("map-count");
     if(mapMode==="all"){
       var read=readSet(),seen={};for(var n in read)placesFor(n).forEach(function(k){seen[k]=1});
-      var total=Object.keys(geo.places).length,got=Object.keys(seen).length;
+      var all={};CH.forEach(function(n){placesFor(n).forEach(function(k){all[k]=1})});
+      var total=Object.keys(all).length,got=Object.keys(seen).length;
       cnt.hidden=false;cnt.textContent="You've visited "+got+" of "+total+" places so far. Dashed lines show journeys still ahead.";
     }else cnt.hidden=true;
   }
@@ -734,6 +876,12 @@ footer select{font:inherit;color:var(--ink);background:var(--surface);border:1px
     if(!geo)return;
     if(placeSel&&mapMode==="today"&&placesFor(CH[sel]).indexOf(placeSel)<0)placeSel=null;
     renderChips();showPlace();drawLegs();drawPins();
+  }
+  function showBookOnMap(b){
+    bookKeys=b.places||[];bookTitle=b.title;setView("today");
+    mapMode="book";$("mode-today").setAttribute("aria-pressed","false");$("mode-all").setAttribute("aria-pressed","false");
+    placeSel=null;mapRender();mapFrame(false);
+    setTimeout(function(){$("map-anchor").scrollIntoView({behavior:"smooth",block:"start"})},50);
   }
   function setMode(m){
     mapMode=m;$("mode-today").setAttribute("aria-pressed",m==="today");$("mode-all").setAttribute("aria-pressed",m==="all");
@@ -749,6 +897,7 @@ footer select{font:inherit;color:var(--ink);background:var(--surface);border:1px
 
   function getJSON(u){return fetch(u).then(function(r){if(!r.ok)throw new Error(r.status);return r.json()})}
   getJSON("notes.json").then(function(j){notes=j;render()}).catch(function(){$("note").textContent="The historical note couldn't load. Check your connection and reopen the page."});
+  getJSON("books.json").then(function(j){shelf=j;fillEraSelect();render()}).catch(function(){$("shelf").textContent="The bookshelf couldn't load. Check your connection and reopen the app."});
   getJSON("talk.json").then(function(j){talk=j;render()}).catch(function(){$("talk").textContent="Today's question couldn't load. Check your connection and reopen the page."});
   Promise.all([getJSON("places.json"),getJSON("base.json")]).then(function(r){
     geo=r[0];geo.base=r[1];
@@ -812,7 +961,12 @@ footer select{font:inherit;color:var(--ink);background:var(--surface);border:1px
 
     save=function(){
       if(!me)return;
-      fs.collection("groups").doc(group).collection("people").doc(me).set({name:names[me]||"",done:state.done,updated:iso(new Date())},{merge:true})
+      var ref=fs.collection("groups").doc(group).collection("people").doc(me);
+      // update() replaces the whole map, so unticked chapters are removed too
+      ref.update({done:state.done,updated:iso(new Date())}).catch(function(e){
+        if(e&&e.code==="not-found")return ref.set({name:names[me]||"",done:state.done,updated:iso(new Date())},{merge:true});
+        throw e;
+      })
         .catch(function(){$("sync-label").textContent="Couldn't sync. Saved on this device"});
     };
 
