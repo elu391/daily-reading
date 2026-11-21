@@ -161,8 +161,8 @@ footer select{font:inherit;color:var(--ink);background:var(--surface);border:1px
 .rstatus{font-size:.88rem;color:var(--muted)}
 
 /* tabs and progress */
-.tabs{display:grid;grid-template-columns:repeat(4,1fr);background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:4px;gap:4px}
-.tabs button{border:0;background:none;color:var(--muted);font:600 .88rem var(--body);padding:9px 0;border-radius:9px;cursor:pointer}
+.tabs{display:grid;grid-template-columns:repeat(5,1fr);background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:4px;gap:4px}
+.tabs button{border:0;background:none;color:var(--muted);font:600 .8rem var(--body);letter-spacing:-.01em;padding:9px 0;min-width:0;border-radius:9px;cursor:pointer}
 .tabs button[aria-selected="true"]{background:var(--accent);color:var(--accent-ink)}
 .tabs button:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
 .view{display:flex;flex-direction:column;gap:22px}
@@ -225,6 +225,42 @@ footer select{font:inherit;color:var(--ink);background:var(--surface);border:1px
 .addform textarea{min-height:70px;resize:vertical}
 .shelf-count{font-size:.85rem;color:var(--muted);margin:0}
 
+/* journal */
+.jcard{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:12px}
+.jprompts{display:flex;flex-direction:column;gap:8px}
+.jprompt{text-align:left;background:var(--bg);border:1px solid var(--line);border-left:3px solid var(--warm);border-radius:10px;padding:9px 12px;color:var(--ink);font:400 .95rem/1.45 var(--body);cursor:pointer}
+.jprompt b{display:block;font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;color:var(--warm);font-weight:700;margin-bottom:2px}
+.jprompt.hist{border-left-color:var(--accent)}.jprompt.hist b{color:var(--accent)}
+.jprompt.edge{border-left-color:var(--j-early)}.jprompt.edge b{color:var(--j-early)}
+.jprompt:focus-visible,.jcard textarea:focus-visible,.jcard input:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.jcard textarea,.jcard input[type=text],.jsearch{box-sizing:border-box;width:100%;font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.jcard textarea{min-height:130px;resize:vertical;line-height:1.5}
+.jverse{display:flex;flex-direction:column;gap:6px}
+.jverse>label{font-size:.75rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.jvrow{display:flex;align-items:center;gap:8px}
+.jvrow span{font-family:var(--display);font-weight:600;white-space:nowrap}
+.jvrow input[type=text]{width:7em;flex:none}
+.jfoot .jstatus{font-size:.85rem;color:var(--muted)}
+.jshare{font-size:.95rem}
+.jtheirs{display:flex;flex-direction:column;gap:10px}
+.jentry{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 16px;display:flex;flex-direction:column;gap:8px}
+.jentry.theirs{border-color:var(--accent);background:var(--accent-soft)}
+.jentry .jtop{display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap}
+.jentry .jtop b{font-family:var(--display);font-weight:600;font-size:1.05rem}
+.jentry .jtop span{font-size:.8rem;color:var(--muted)}
+.jbadge{font-size:.72rem;font-weight:600;border-radius:999px;padding:2px 9px;background:var(--bg);border:1px solid var(--line);color:var(--muted)}
+.jbadge.shared{color:var(--done);border-color:var(--done);background:var(--done-soft)}
+.jquote{margin:0;font-family:var(--display);font-size:1.05rem;line-height:1.4;border-left:3px solid var(--warm);padding-left:12px}
+.jquote cite{display:block;font:600 .8rem var(--body);color:var(--muted);font-style:normal;margin-top:3px}
+.jbody{margin:0;white-space:pre-wrap;overflow-wrap:anywhere;font-size:.95rem}
+.jbody.clamp{display:-webkit-box;-webkit-line-clamp:6;-webkit-box-orient:vertical;overflow:hidden}
+.jactions{display:flex;flex-wrap:wrap;gap:16px;align-items:center}
+.jbook{font-family:var(--display);font-weight:600;font-size:1.2rem;margin:14px 0 8px}
+.jlist{display:flex;flex-direction:column;gap:10px}
+.tl-item.journal::after{background:var(--j-early)}
+.tl-item.journal .tl-card{border-left:3px solid var(--j-early)}
+.tl-item.journal .tt{font-weight:600}
+
 /* timeline */
 .tl-tools{display:flex;flex-direction:column;gap:8px}
 .tl{position:relative;display:flex;flex-direction:column;gap:10px;padding-left:0}
@@ -267,6 +303,7 @@ footer select{font:inherit;color:var(--ink);background:var(--surface);border:1px
     <button type="button" role="tab" id="tab-progress" aria-selected="false">Progress</button>
     <button type="button" role="tab" id="tab-books" aria-selected="false">Books</button>
     <button type="button" role="tab" id="tab-time" aria-selected="false">Timeline</button>
+    <button type="button" role="tab" id="tab-journal" aria-selected="false">Journal</button>
   </div>
 
   <div class="view" id="view-today">
@@ -333,14 +370,28 @@ footer select{font:inherit;color:var(--ink);background:var(--surface);border:1px
         <span class="modern" id="pi-modern"></span>
         <p id="pi-desc"></p>
         <span class="seen" id="pi-seen"></span>
+        <span class="seen" id="pi-journal" hidden></span>
         <div class="links"><a id="pi-map" href="https://www.google.com/maps" target="_blank" rel="noopener">Open in Google Maps</a></div>
       </div>
     </div>
   </section>
 
-  <section class="block">
-    <span class="eyebrow" id="prompt-label">Reflect</span>
-    <div class="prompt"><p id="prompt">What does this show about God or Jesus?</p></div>
+  <section class="block" id="journal-box">
+    <span class="eyebrow" id="prompt-label">Journal</span>
+    <div class="jcard">
+      <div class="jprompts" id="j-prompts" aria-label="Writing prompts. Tap one to add it to your entry."></div>
+      <textarea id="j-text" maxlength="5000" aria-label="Journal entry" placeholder="Write what you noticed, a question, or a prayer. Tap a prompt above to start."></textarea>
+      <div class="jverse">
+        <label for="j-v">Favorite verse</label>
+        <div class="jvrow"><span id="j-vbook">Mark 1:</span><input type="text" id="j-v" inputmode="numeric" maxlength="9" placeholder="verse no."></div>
+        <input type="text" id="j-vt" maxlength="300" aria-label="Words of the verse" placeholder="Words of the verse (optional)">
+      </div>
+      <div class="rrow jfoot">
+        <label class="jshare"><input type="checkbox" id="j-share"> <span id="j-share-label">Share with your reading partner</span></label>
+        <span class="jstatus" id="j-status" aria-live="polite"></span>
+      </div>
+    </div>
+    <div class="jtheirs" id="j-theirs"></div>
   </section>
 
   <section class="block">
@@ -445,6 +496,21 @@ footer select{font:inherit;color:var(--ink);background:var(--surface);border:1px
       <p class="tl-note" id="tl-note"></p>
     </section>
     <div class="tl" id="tl"></div>
+  </div>
+
+  <div class="view" id="view-journal" hidden>
+    <section class="block tl-tools">
+      <span class="eyebrow">Your journal</span>
+      <input class="jsearch" type="search" id="jr-search" placeholder="Search your journal" aria-label="Search your journal">
+      <div class="filters" id="jr-filters" aria-label="Filter journal"></div>
+      <p class="shelf-count" id="jr-count"></p>
+    </section>
+    <p class="hint" id="jr-empty" hidden></p>
+    <div id="jr-list"></div>
+    <section class="block">
+      <div class="rrow"><button class="btn read" type="button" id="jr-export" style="flex:none;min-height:40px">Save a copy of my journal</button></div>
+      <p class="hint" style="margin-top:8px">Private entries are hidden from your reading partner in the app. Shared ones show up on their Today page and in their Journal.</p>
+    </section>
   </div>
 
   <footer>
@@ -555,9 +621,7 @@ footer select{font:inherit;color:var(--ink);background:var(--surface);border:1px
     }
 
     $("note").textContent=notes[name]||"The note for this chapter is loading.";
-    var showWeekend=isWeekend&&w===week;
-    $("prompt-label").textContent=showWeekend?"Weekend reflection":"Reflect · "+DAYS[d];
-    $("prompt").textContent=showWeekend?WEEKEND:PROMPTS[d];
+    renderJournalBox();
     $("talk").textContent=talk[name]||"Loading today's question.";
 
     var cw=$("catchup-wrap"),cl=$("catchup");cl.innerHTML="";
@@ -575,6 +639,7 @@ footer select{font:inherit;color:var(--ink);background:var(--surface);border:1px
     if(typeof renderProgress==="function")renderProgress();
     if(typeof renderShelf==="function")renderShelf();
     if(typeof renderTimeline==="function")renderTimeline();
+    if(typeof renderJournal==="function")renderJournal();
   }
 
   function renderTogether(){
@@ -609,16 +674,19 @@ footer select{font:inherit;color:var(--ink);background:var(--surface);border:1px
   var view="today";
   function openChapter(i){sel=i;placeSel=null;setView("today");render();mapFrame(true);window.scrollTo({top:0,behavior:"smooth"})}
   function setView(v){
-    view=v;$("view-today").hidden=v!=="today";$("view-progress").hidden=v!=="progress";$("view-books").hidden=v!=="books";$("view-time").hidden=v!=="time";
-    $("tab-today").setAttribute("aria-selected",v==="today");$("tab-progress").setAttribute("aria-selected",v==="progress");$("tab-books").setAttribute("aria-selected",v==="books");$("tab-time").setAttribute("aria-selected",v==="time");
+    view=v;$("view-today").hidden=v!=="today";$("view-progress").hidden=v!=="progress";$("view-books").hidden=v!=="books";$("view-time").hidden=v!=="time";$("view-journal").hidden=v!=="journal";
+    $("tab-today").setAttribute("aria-selected",v==="today");$("tab-progress").setAttribute("aria-selected",v==="progress");$("tab-books").setAttribute("aria-selected",v==="books");$("tab-time").setAttribute("aria-selected",v==="time");$("tab-journal").setAttribute("aria-selected",v==="journal");
+    if(v!=="today")flushNote();
     if(v==="progress")renderProgress();
     if(v==="books")renderShelf();
     if(v==="time")renderTimeline();
+    if(v==="journal")renderJournal();
     if(v!=="today"&&mapMode==="book")setMode("today");
   }
   $("tab-today").addEventListener("click",function(){setView("today")});
   $("tab-progress").addEventListener("click",function(){setView("progress");window.scrollTo({top:0})});
   $("tab-books").addEventListener("click",function(){setView("books");window.scrollTo({top:0})});
+  $("tab-journal").addEventListener("click",function(){setView("journal");window.scrollTo({top:0})});
   $("tab-time").addEventListener("click",function(){setView("time");setTimeout(function(){var h=$("tl-here");if(h)h.scrollIntoView({block:"center"})},30)});
   function dateOf(i){var w=Math.floor(i/5),d=i%5;return new Date(START.getFullYear(),START.getMonth(),START.getDate()+w*7+d)}
   function fmtDate(d){return d.toLocaleDateString(undefined,{weekday:"long",month:"long",day:"numeric",year:"numeric"})}
@@ -770,7 +838,7 @@ footer select{font:inherit;color:var(--ink);background:var(--surface);border:1px
   $("map-back").addEventListener("click",function(){setMode("today");setView(mapReturn);if(mapReturn==="time"){var h=$("tl-here");if(h)h.scrollIntoView({block:"center"})}else window.scrollTo({top:0})});
 
   /* ---------- Timeline ---------- */
-  var tline=null,tlShow={bible:true,novels:true,world:true},mapReturn="books";
+  var tline=null,tlShow={bible:true,novels:true,world:true,journal:true},mapReturn="books";
   function yr(y,a){var s=y<0?(-y)+" BC":"AD "+y;return (a?"about ":"")+s}
   function chapterYear(i){
     if(!tline)return null;
@@ -786,7 +854,7 @@ footer select{font:inherit;color:var(--ink);background:var(--surface);border:1px
   function renderTimeline(){
     if(view!=="time"||!tline)return;
     var f=$("tl-filters");f.innerHTML="";
-    [["bible","Bible events"],["novels","Novels"],["world","World history"]].forEach(function(o){
+    [["bible","Bible events"],["journal","My journal"],["novels","Novels"],["world","World history"]].forEach(function(o){
       var b=document.createElement("button");b.type="button";b.className="chip";b.textContent=o[1];
       b.setAttribute("aria-pressed",tlShow[o[0]]?"true":"false");
       b.addEventListener("click",function(){tlShow[o[0]]=!tlShow[o[0]];renderTimeline()});f.appendChild(b);
@@ -803,9 +871,10 @@ footer select{font:inherit;color:var(--ink);background:var(--surface);border:1px
         items.push({y:y,k:"novel",e:b});
       });
     }
+    if(tlShow.journal)journalEntries(false).forEach(function(n){var c=chapterYear(n.i);if(c)items.push({y:c.y,k:"journal",e:n})});
     var cy=chapterYear(Math.max(sel,0));
     if(cy)items.push({y:cy.y,k:"here",e:cy});
-    var order={here:0,bible:1,novel:2,world:3};
+    var order={here:0,journal:1,bible:2,novel:3,world:4};
     items.sort(function(a,b){return a.y-b.y||order[a.k]-order[b.k]});
     var box=$("tl");box.innerHTML="";var eraIdx=-1;
     items.forEach(function(it){
@@ -824,6 +893,12 @@ footer select{font:inherit;color:var(--ink);background:var(--surface);border:1px
         yl.textContent=it.e.id==="the-source"?"all eras":yr(it.y,it.y<-900);
         line("tt",it.e.title);var st=bookStatus(it.e.id),lab={want:"Want to read",reading:"Reading now",done:"Finished"}[st];
         line("rf",(it.e.author||"")+(lab?" · "+lab:""));
+      }else if(it.k==="journal"){
+        yl.textContent=yr(it.y,true);row.id="tl-j-"+it.e.i;
+        line("tt","Your journal · "+CH[it.e.i]);
+        line("rf",it.e.vt?"\u201c"+it.e.vt+"\u201d":snippet(it.e.t,110));
+        var ob=document.createElement("button");ob.type="button";ob.className="linkbtn";ob.textContent="Open entry";
+        ob.addEventListener("click",function(){openChapter(it.e.i);setTimeout(function(){$("journal-box").scrollIntoView({behavior:"smooth",block:"start"})},80)});card.appendChild(ob);
       }else{
         yl.textContent=yr(it.y,true);row.id="tl-here";
         line("tt","You are here: "+CH[Math.max(sel,0)]);
@@ -839,6 +914,163 @@ footer select{font:inherit;color:var(--ink);background:var(--surface);border:1px
     });
   }
   $("tl-jump").addEventListener("click",function(){var h=$("tl-here");if(h)h.scrollIntoView({behavior:"smooth",block:"center"})});
+  /* ---------- Journal ---------- */
+  var NARR={"Matthew":1,"Mark":1,"Luke":1,"John":1,"Acts":1};
+  var jIdx=null,jDirty=false,jTimer=null,jrFilter="all",jrOpen={};
+  function bookOf(i){return CH[i].replace(/ \d+$/,"")}
+  function noteOf(done,i){var v=done&&done["note:"+i];if(!v)return null;try{var n=JSON.parse(v);n.i=i;return n}catch(e){return null}}
+  function partnerName(){return others.length?(names[others[0].id]||"your reading partner"):"your reading partner"}
+  function journalEntries(withTheirs){
+    var out=[];
+    for(var k in state.done){if(k.indexOf("note:")===0){var n=noteOf(state.done,+k.slice(5));if(n&&CH[n.i]){n.mine=true;out.push(n)}}}
+    if(withTheirs)others.forEach(function(o){for(var k in o.done){if(k.indexOf("note:")===0){var n=noteOf(o.done,+k.slice(5));if(n&&n.s&&CH[n.i]){n.mine=false;n.who=names[o.id]||"Your reading partner";out.push(n)}}}});
+    return out.sort(function(a,b){return a.i-b.i||(b.mine-a.mine)});
+  }
+  function snippet(t,n){t=(t||"").replace(/\s+/g," ").trim();return t.length>n?t.slice(0,n-1).replace(/\s\S*$/,"")+"…":t}
+  function firstSentence(t){var m=/^(.+?[.!?])(\s|$)/.exec(t||"");return m?m[1]:""}
+  function shortDate(s){if(!s)return "";var p=s.split("-");return new Date(+p[0],+p[1]-1,+p[2]).toLocaleDateString(undefined,{month:"short",day:"numeric"})}
+  function promptsFor(i){
+    var name=CH[i],b=bookOf(i),d=i%5,w=Math.floor(i/5),list=[];
+    var showWeekend=isWeekend&&w===week;
+    list.push({cls:"",tag:showWeekend?"Weekend reflection":"Reflect",t:showWeekend?WEEKEND:PROMPTS[d]});
+    var fs1=firstSentence(notes[name]);
+    if(fs1)list.push({cls:"hist",tag:"From the history",t:fs1+" How does knowing this change the way you picture the chapter?"});
+    var pl=placesFor(name).map(function(k){return geo.places[k].n.replace(/ \(.+\)$/,"")});
+    if(NARR[b])list.push({cls:"edge",tag:"At the edge of the story",t:"Who stands at the edge of this chapter: a servant, a soldier, a neighbor in the crowd? Tell one moment through their eyes."+(pl.length?" Picture "+pl[0]+": what would they have seen and heard?":"")});
+    else if(b==="Revelation")list.push({cls:"edge",tag:"First listeners",t:"Picture a believer in one of the seven churches of Asia hearing this read aloud, under Roman rule and pressure to honour the emperor. What would they have held onto?"});
+    else list.push({cls:"edge",tag:"First listeners",t:"Picture the believers "+(pl.length?"in "+pl[0]:"who first received this letter")+" hearing it read aloud for the first time. What would have surprised or comforted them?"});
+    return list;
+  }
+  function jStatus(t){$("j-status").textContent=t}
+  function scheduleSave(){jDirty=true;jStatus("Saving…");clearTimeout(jTimer);jTimer=setTimeout(flushNote,900)}
+  function flushNote(){
+    clearTimeout(jTimer);jTimer=null;
+    if(!jDirty||jIdx===null)return;
+    jDirty=false;
+    var t=$("j-text").value.replace(/\s+$/,""),v=$("j-v").value.trim(),vt=$("j-vt").value.trim(),sh=$("j-share").checked;
+    var old=noteOf(state.done,jIdx),key="note:"+jIdx;
+    if(!t&&!v&&!vt){if(old)setDone(key,null);jStatus(old?"Entry removed":"");return}
+    var o={t:t,s:sh?1:0,c:(old&&old.c)||iso(new Date()),u:iso(new Date())};if(v)o.v=v;if(vt)o.vt=vt;
+    setDone(key,JSON.stringify(o));
+    jStatus(navigator.onLine?"Saved":"Saved on this phone. Will sync when you're back online");
+  }
+  function renderJournalBox(){
+    if(sel===null)return;
+    var name=CH[sel];
+    $("prompt-label").textContent="Journal · "+name;
+    var pb=$("j-prompts");pb.innerHTML="";
+    promptsFor(sel).forEach(function(p){
+      var b=document.createElement("button");b.type="button";b.className="jprompt "+p.cls;
+      var tg=document.createElement("b");tg.textContent=p.tag;b.appendChild(tg);b.appendChild(document.createTextNode(p.t));
+      b.addEventListener("click",function(){var ta=$("j-text");ta.value=(ta.value.replace(/\s+$/,"")?ta.value.replace(/\s+$/,"")+"\n\n":"")+p.t+"\n";ta.focus();ta.setSelectionRange(ta.value.length,ta.value.length);scheduleSave()});
+      pb.appendChild(b);
+    });
+    $("j-vbook").textContent=name.replace(/ (\d+)$/," $1:");
+    $("j-share-label").textContent="Share with "+partnerName();
+    var ta=$("j-text"),focused=[ta,$("j-v"),$("j-vt")].indexOf(document.activeElement)>=0;
+    if(jIdx!==sel){flushNote();jIdx=sel;jStatus("")}
+    else if(jDirty||focused)return renderTheirs();
+    var n=noteOf(state.done,sel)||{};
+    ta.value=n.t||"";$("j-v").value=n.v||"";$("j-vt").value=n.vt||"";$("j-share").checked=!!n.s;
+    if(n.u&&!$("j-status").textContent)jStatus("Last edited "+shortDate(n.u));
+    renderTheirs();
+  }
+  function renderTheirs(){
+    var box=$("j-theirs");box.innerHTML="";
+    others.forEach(function(o){var n=noteOf(o.done,sel);if(n&&n.s){n.who=names[o.id]||"Your reading partner";n.mine=false;box.appendChild(entryCard(n,{noOpen:true}))}});
+  }
+  ["j-text","j-v","j-vt"].forEach(function(id){$(id).addEventListener("input",scheduleSave);$(id).addEventListener("blur",flushNote)});
+  $("j-share").addEventListener("change",function(){jDirty=true;flushNote()});
+  window.addEventListener("pagehide",flushNote);
+  document.addEventListener("visibilitychange",function(){if(document.hidden)flushNote()});
+
+  function verseLink(n){return "https://www.bible.com/bible/"+(YV[version]||111)+"/"+REF[n.i]+"."+String(n.v).replace(/[^0-9-]/g,"")+"."+(YV[version]?version:"NIV")}
+  function entryCard(n,opt){
+    opt=opt||{};
+    var c=document.createElement("article");c.className="jentry"+(n.mine?"":" theirs");
+    var top=document.createElement("div");top.className="jtop";
+    var h=document.createElement("b");h.textContent=n.mine?CH[n.i]:n.who+"'s note"+(opt.noOpen?"":" · "+CH[n.i]);top.appendChild(h);
+    var meta=document.createElement("span");meta.style.display="flex";meta.style.gap="8px";meta.style.alignItems="center";
+    var dt=document.createElement("span");dt.textContent=shortDate(n.u||n.c);meta.appendChild(dt);
+    if(n.mine){var bd=document.createElement("span");bd.className="jbadge"+(n.s?" shared":"");bd.textContent=n.s?"Shared":"Private";meta.appendChild(bd)}
+    top.appendChild(meta);c.appendChild(top);
+    if(n.v||n.vt){
+      var q=document.createElement("blockquote");q.className="jquote";
+      if(n.vt)q.appendChild(document.createTextNode("“"+n.vt+"”"));
+      var ci=document.createElement("cite");
+      if(n.v){var a=document.createElement("a");a.href=verseLink(n);a.target="_blank";a.rel="noopener";a.textContent=CH[n.i]+":"+n.v;a.style.color="inherit";ci.appendChild(a)}else ci.textContent=CH[n.i];
+      q.appendChild(ci);c.appendChild(q);
+    }
+    if(n.t){
+      var p=document.createElement("p");p.className="jbody";p.textContent=n.t;
+      var key=(n.mine?"m":"t")+n.i;
+      if(!jrOpen[key]&&n.t.split("\n").length+n.t.length/60>7){p.classList.add("clamp");p.style.cursor="pointer";p.title="Tap to read all";p.addEventListener("click",function(){jrOpen[key]=1;p.classList.remove("clamp")})}
+      c.appendChild(p);
+    }
+    if(!opt.noOpen){
+      var act=document.createElement("div");act.className="jactions";
+      function lb(t,f){var b=document.createElement("button");b.type="button";b.className="linkbtn";b.textContent=t;b.addEventListener("click",f);act.appendChild(b)}
+      lb(n.mine?"Edit":"Open chapter",function(){openChapter(n.i);setTimeout(function(){$("journal-box").scrollIntoView({behavior:"smooth",block:"start"})},80)});
+      var pl=placesFor(CH[n.i]);
+      if(pl.length&&geo)lb("Map",function(){mapReturn="journal";showBookOnMap({title:CH[n.i],places:pl})});
+      if(tline)lb("Timeline",function(){tlShow.journal=true;setView("time");setTimeout(function(){var e=$("tl-j-"+n.i)||$("tl-here");if(e)e.scrollIntoView({block:"center"})},40)});
+      c.appendChild(act);
+    }
+    return c;
+  }
+  function renderJournal(){
+    if(view!=="journal")return;
+    var all=journalEntries(true),mine=all.filter(function(n){return n.mine}),theirs=all.length-mine.length;
+    var f=$("jr-filters");f.innerHTML="";
+    var opts=[["all","All"],["shared","Shared"],["private","Private"],["verses","Favorite verses"]];
+    if(theirs||others.length)opts.push(["theirs","From "+partnerName()]);
+    opts.forEach(function(o){
+      var b=document.createElement("button");b.type="button";b.className="chip";b.textContent=o[1];
+      b.setAttribute("aria-pressed",jrFilter===o[0]?"true":"false");
+      b.addEventListener("click",function(){jrFilter=o[0];renderJournal()});f.appendChild(b);
+    });
+    var q=$("jr-search").value.trim().toLowerCase();
+    var list=all.filter(function(n){
+      if(jrFilter==="shared"&&!(n.mine&&n.s))return false;
+      if(jrFilter==="private"&&!(n.mine&&!n.s))return false;
+      if(jrFilter==="verses"&&!(n.v||n.vt))return false;
+      if(jrFilter==="theirs"&&n.mine)return false;
+      if(jrFilter!=="theirs"&&jrFilter!=="all"&&jrFilter!=="verses"&&!n.mine)return false;
+      if(q&&((n.t||"")+" "+(n.vt||"")+" "+CH[n.i]+" "+(n.who||"")).toLowerCase().indexOf(q)<0)return false;
+      return true;
+    });
+    var vcount=mine.filter(function(n){return n.v||n.vt}).length;
+    $("jr-count").textContent=mine.length+(mine.length===1?" entry":" entries")+" · "+vcount+(vcount===1?" favorite verse":" favorite verses")+(theirs?" · "+theirs+" shared by "+partnerName():"");
+    var box=$("jr-list");box.innerHTML="";var cur=null,grp=null;
+    list.forEach(function(n){
+      var b=bookOf(n.i);
+      if(b!==cur){cur=b;var h=document.createElement("h2");h.className="jbook";h.textContent=b;box.appendChild(h);grp=document.createElement("div");grp.className="jlist";box.appendChild(grp)}
+      grp.appendChild(entryCard(n));
+    });
+    var em=$("jr-empty");em.hidden=list.length>0;
+    em.textContent=!all.length?"Your journal is empty so far. Write a few lines under each day's chapter on the Today page, and they'll collect here, sorted by book.":"Nothing matches"+(q?" “"+$("jr-search").value.trim()+"”":" this filter")+".";
+    $("jr-export").hidden=!mine.length;
+  }
+  $("jr-search").addEventListener("input",renderJournal);
+  $("jr-export").addEventListener("click",function(){
+    var lines=["My Bible journal",""],cur=null;
+    journalEntries(false).forEach(function(n){
+      var b=bookOf(n.i);if(b!==cur){cur=b;lines.push("","== "+b+" ==","")}
+      lines.push(CH[n.i]+"  ("+(n.u||n.c||"")+(n.s?", shared":", private")+")");
+      if(n.v||n.vt)lines.push("Favorite verse"+(n.v?" "+CH[n.i]+":"+n.v:"")+(n.vt?": “"+n.vt+"”":""));
+      if(n.t)lines.push(n.t);
+      lines.push("");
+    });
+    var txt=lines.join("\n"),fname="bible-journal-"+iso(new Date())+".txt";
+    try{
+      var file=new File([txt],fname,{type:"text/plain"});
+      if(navigator.canShare&&navigator.canShare({files:[file]})){navigator.share({files:[file],title:"My Bible journal"}).catch(function(){});return}
+    }catch(e){}
+    var a=document.createElement("a");a.href=URL.createObjectURL(new Blob([txt],{type:"text/plain"}));a.download=fname;document.body.appendChild(a);a.click();
+    setTimeout(function(){URL.revokeObjectURL(a.href);a.remove()},1000);
+  });
+  function notedPlaces(){var s={};journalEntries(false).forEach(function(n){placesFor(CH[n.i]).forEach(function(k){(s[k]=s[k]||[]).push(n.i)})});return s}
+
   /* ---------- Map ---------- */
   var mapMode="today", placeSel=null, hiddenJ={}, bookKeys=[], bookTitle="";
   var svg=null,gBase=null,gLegs=null,gPins=null,proj=null,zoom=null,curT=null,W=0,H=0;
@@ -918,7 +1150,7 @@ footer select{font:inherit;color:var(--ink);background:var(--surface);border:1px
     gPins.selectAll("*").remove();
     var cur=mapMode==="book"?bookKeys:placesFor(CH[sel]),read=readSet(),seen={};
     for(var n in read)placesFor(n).forEach(function(k){seen[k]=1});
-    var keys=Object.keys(geo.places),list=[];
+    var keys=Object.keys(geo.places),list=[],noted=notedPlaces();
     keys.forEach(function(k){
       var main=mapMode!=="all"?cur.indexOf(k)>=0:(seen[k]||cur.indexOf(k)>=0);
       var faint=!main&&(mapMode==="all"||seen[k]);
@@ -942,6 +1174,7 @@ footer select{font:inherit;color:var(--ink);background:var(--surface);border:1px
       if(x<-20||y<-20||x>W+20||y>H+20)return;
       var g=gPins.append("g").attr("class","pin").attr("transform","translate("+x+","+y+")")
         .attr("tabindex",0).attr("role","button").attr("aria-label",p.n);
+      if(noted[o.k])g.append("circle").attr("r",(o.k===placeSel?8:(o.main?6:3.5))+3.5).attr("fill","none").attr("stroke","var(--j-early)").attr("stroke-width",2);
       g.append("circle").attr("r",o.k===placeSel?8:(o.main?6:3.5)).attr("fill",o.main?"var(--pin)":"var(--pin-faint)");
       if(labelOK[o.k])g.append("text").attr("x",9).attr("y",4).text(short(p.n));
       g.on("click",function(ev){ev.stopPropagation();choosePlace(o.k,false)})
@@ -961,6 +1194,8 @@ footer select{font:inherit;color:var(--ink);background:var(--surface);border:1px
     $("pi-name").textContent=p.n;$("pi-modern").textContent="Today: "+p.m;$("pi-desc").textContent=p.d;
     var chs=chaptersWith(placeSel);
     $("pi-seen").textContent=chs.length?"In your plan: "+chs.slice(0,8).join(", ")+(chs.length>8?" and "+(chs.length-8)+" more":""):"";
+    var jl=$("pi-journal");jl.innerHTML="";var nn=notedPlaces()[placeSel]||[];jl.hidden=!nn.length;
+    if(nn.length){jl.appendChild(document.createTextNode("Your journal: "));nn.forEach(function(i,x){var b=document.createElement("button");b.type="button";b.className="linkbtn";b.textContent=CH[i];b.addEventListener("click",function(){openChapter(i);setTimeout(function(){$("journal-box").scrollIntoView({behavior:"smooth",block:"start"})},80)});if(x)jl.appendChild(document.createTextNode(", "));jl.appendChild(b)})}
     $("pi-map").href="https://www.google.com/maps/search/?api=1&query="+p.ll[0]+","+p.ll[1];
   }
   function renderChips(){
@@ -980,7 +1215,7 @@ footer select{font:inherit;color:var(--ink);background:var(--surface);border:1px
       var read=readSet(),seen={};for(var n in read)placesFor(n).forEach(function(k){seen[k]=1});
       var all={};CH.forEach(function(n){placesFor(n).forEach(function(k){all[k]=1})});
       var total=Object.keys(all).length,got=Object.keys(seen).length;
-      cnt.hidden=false;cnt.textContent="You've visited "+got+" of "+total+" places so far. Dashed lines show journeys still ahead.";
+      cnt.hidden=false;cnt.textContent="You've visited "+got+" of "+total+" places so far. Dashed lines show journeys still ahead."+(Object.keys(notedPlaces()).length?" Purple rings mark places you've written about.":"");
     }else cnt.hidden=true;
   }
   function mapRender(){
