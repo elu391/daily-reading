@@ -1,6 +1,6 @@
 // Keeps the app working offline: the app's own files are cached on install,
 // and the map, font and database libraries are cached the first time they load.
-const VERSION = 'dr-v2';
+const VERSION = 'dr-v3';
 const SHELL = ['./', 'index.html', 'config.js', 'manifest.json', 'icon-180.png', 'icon-512.png',
   'notes.json', 'talk.json', 'places.json', 'base.json'];
 

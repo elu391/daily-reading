@@ -622,7 +622,15 @@ footer select{font:inherit;color:var(--ink);background:var(--surface);border:1px
       inviteEl.hidden=true;setupEl.hidden=false;setupEl.innerHTML="";
       setupEl.appendChild(el("p",{text:"Read together and keep your progress on every device. Start a private reading group, then send the link to your husband."}));
       setupEl.appendChild(el("button",{class:"btn mark",type:"button",text:"Start our reading group",on:function(){group=rand(24);lsSet("brp-group",group);history.replaceState(null,"","#g="+group);showWho([])}}));
-      setupEl.appendChild(el("p",{class:"hint",text:"Got a link from your husband? Just open it on this phone."}));
+      setupEl.appendChild(el("p",{class:"hint",text:"Already have a private link? Paste it here:"}));
+      var li=el("input",{id:"join-input",type:"url",placeholder:"Paste your private link",autocomplete:"off"});
+      setupEl.appendChild(li);
+      setupEl.appendChild(el("button",{class:"btn read",type:"button",text:"Join with this link",on:function(){
+        var m=/#g=([a-z0-9]{20,40})/.exec(li.value.trim());
+        if(!m){li.focus();li.value="";li.placeholder="That doesn't look like a private link";return}
+        group=m[1];lsSet("brp-group",group);history.replaceState(null,"","#g="+group);
+        fs.collection("groups").doc(group).collection("people").get().then(function(s){showWho(s.docs.map(function(d){return {id:d.id,name:(d.data()||{}).name}}))}).catch(function(){showWho([])});
+      }}));
     }
     function showWho(people){
       inviteEl.hidden=true;setupEl.hidden=false;setupEl.innerHTML="";
