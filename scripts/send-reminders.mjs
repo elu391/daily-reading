@@ -78,7 +78,7 @@ async function main() {
       ...Object.fromEntries(Object.entries(d.fields || {}).map(([k, v]) => [k, plain(v)]))
     }));
     const url = `${APP_URL}#g=${code}`;
-    console.log(`Group found: ${people.length} reader(s), ${people.filter(p => p.push && p.push.endpoint).length} with reminders on.`);
+    console.log(`Group ending ${code.slice(-4)}: ${people.length} reader(s), ${people.filter(p => p.push && p.push.endpoint).length} with reminders on.`);
     if (process.env.TEST === 'true') {
       for (const p of people.filter(p => p.push && p.push.endpoint)) {
         const ok = await send(p, { title: 'Daily Reading', body: 'Test reminder: notifications are working.', url, tag: 'test' });
