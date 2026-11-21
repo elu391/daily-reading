@@ -580,6 +580,8 @@ footer select{font:inherit;color:var(--ink);background:var(--surface);border:1px
   }else{
     firebase.initializeApp(CFG);
     var fs=firebase.firestore();
+    // keep a copy on the phone so checkmarks work offline and sync later
+    try{fs.enablePersistence({synchronizeTabs:true}).catch(function(){})}catch(e){}
     var me=null,unsub=null;
 
     function showStart(){
@@ -618,8 +620,10 @@ footer select{font:inherit;color:var(--ink);background:var(--surface);border:1px
     function startSync(){
       if(unsub)unsub();
       inviteEl.hidden=false;$("invite-link").textContent=linkFor(group);
-      unsub=fs.collection("groups").doc(group).collection("people").onSnapshot(function(snap){
-        $("sync").classList.add("on");$("sync-label").textContent="Synced";
+      unsub=fs.collection("groups").doc(group).collection("people").onSnapshot({includeMetadataChanges:true},function(snap){
+        var off=!navigator.onLine||snap.metadata.fromCache;
+        $("sync").classList.toggle("on",!off);
+        $("sync-label").textContent=off?(snap.metadata.hasPendingWrites?"Offline. Will sync when you're back online":"Offline"):"Synced";
         var mine=null,list=[];
         snap.docs.forEach(function(d){var data=d.data()||{};names[d.id]=data.name||"";if(d.id===me)mine=data.done||{};else list.push({id:d.id,done:data.done||{}})});
         if(mine===null){me=null;showWho(snap.docs.map(function(d){return {id:d.id,name:(d.data()||{}).name}}));return}
@@ -652,6 +656,11 @@ footer select{font:inherit;color:var(--ink);background:var(--surface);border:1px
     }
   }
 })();
+</script>
+<script>
+if("serviceWorker" in navigator){window.addEventListener("load",function(){navigator.serviceWorker.register("sw.js").catch(function(){})})}
+window.addEventListener("online",function(){var l=document.getElementById("sync-label");if(l&&/Offline/.test(l.textContent))l.textContent="Syncing"});
+window.addEventListener("offline",function(){var l=document.getElementById("sync-label");if(l){l.textContent="Offline. Your checkmarks will sync later";document.getElementById("sync").classList.remove("on")}});
 </script>
 </body>
 </html>
