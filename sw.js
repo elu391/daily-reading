@@ -1,8 +1,8 @@
 // Keeps the app working offline: the app's own files are cached on install,
 // and the map, font and database libraries are cached the first time they load.
-const VERSION = 'dr-v5';
+const VERSION = 'dr-v6';
 const SHELL = ['./', 'index.html', 'config.js', 'manifest.json', 'icon-180.png', 'icon-512.png',
-  'notes.json', 'talk.json', 'books.json', 'places.json', 'base.json'];
+  'notes.json', 'talk.json', 'books.json', 'timeline.json', 'places.json', 'base.json'];
 
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(VERSION).then(c => c.addAll(SHELL)).then(() => self.skipWaiting()));

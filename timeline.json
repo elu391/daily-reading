@@ -1,0 +1,778 @@
+{
+"eras": [
+{
+"id": "patriarchs",
+"name": "Patriarchs",
+"from": -2100,
+"to": -1876
+},
+{
+"id": "exodus",
+"name": "Egypt, Exodus and conquest",
+"from": -1876,
+"to": -1375
+},
+{
+"id": "kings",
+"name": "Judges and kings",
+"from": -1375,
+"to": -586
+},
+{
+"id": "exile",
+"name": "Exile and return",
+"from": -586,
+"to": -430
+},
+{
+"id": "between",
+"name": "Between the Testaments",
+"from": -430,
+"to": -6
+},
+{
+"id": "jesus",
+"name": "Life of Jesus",
+"from": -6,
+"to": 30
+},
+{
+"id": "church",
+"name": "Early church and Rome",
+"from": 30,
+"to": 100
+}
+],
+"note": "Dates before about 900 BC are approximate and follow a traditional chronology based on 1 Kings 6:1.",
+"events": [
+{
+"y": -2091,
+"a": 1,
+"t": "Abraham leaves Haran for Canaan",
+"ref": "Genesis 12",
+"places": [
+"ur",
+"haran",
+"shechem"
+]
+},
+{
+"y": -2066,
+"a": 1,
+"t": "Isaac is born to Abraham and Sarah",
+"ref": "Genesis 21",
+"places": [
+"hebron"
+]
+},
+{
+"y": -2006,
+"a": 1,
+"t": "Jacob and Esau are born",
+"ref": "Genesis 25"
+},
+{
+"y": -1929,
+"a": 1,
+"t": "Jacob flees to Haran and marries Leah and Rachel",
+"ref": "Genesis 28–29",
+"places": [
+"haran"
+]
+},
+{
+"y": -1898,
+"a": 1,
+"t": "Joseph is sold into slavery in Egypt",
+"ref": "Genesis 37",
+"places": [
+"shechem",
+"egypt"
+]
+},
+{
+"y": -1876,
+"a": 1,
+"t": "Jacob's family settles in Goshen",
+"ref": "Genesis 46–47",
+"places": [
+"goshen"
+]
+},
+{
+"y": -1526,
+"a": 1,
+"t": "Moses is born and raised in Pharaoh's court",
+"ref": "Exodus 2",
+"places": [
+"egypt"
+]
+},
+{
+"y": -1446,
+"a": 1,
+"t": "The Exodus: Israel leaves Egypt",
+"ref": "Exodus 12–14",
+"places": [
+"goshen",
+"sinai"
+]
+},
+{
+"y": -1446,
+"a": 1,
+"t": "God gives the law at Mount Sinai",
+"ref": "Exodus 19–20",
+"places": [
+"sinai"
+]
+},
+{
+"y": -1406,
+"a": 1,
+"t": "Israel crosses the Jordan and Jericho falls",
+"ref": "Joshua 3–6",
+"places": [
+"jordan",
+"jericho"
+]
+},
+{
+"y": -1400,
+"a": 1,
+"t": "Cities of refuge are set apart",
+"ref": "Joshua 20",
+"places": [
+"kedesh",
+"shechem",
+"hebron"
+]
+},
+{
+"y": -1200,
+"a": 1,
+"t": "The time of the judges: Deborah, Gideon, Samson",
+"ref": "Judges"
+},
+{
+"y": -1100,
+"a": 1,
+"t": "Ruth comes to Bethlehem with Naomi",
+"ref": "Ruth",
+"places": [
+"moab",
+"bethlehem"
+]
+},
+{
+"y": -1050,
+"a": 1,
+"t": "Saul becomes Israel's first king",
+"ref": "1 Samuel 10",
+"places": [
+"gibeah"
+]
+},
+{
+"y": -1010,
+"a": 1,
+"t": "David is made king at Hebron",
+"ref": "2 Samuel 2",
+"places": [
+"hebron"
+]
+},
+{
+"y": -1003,
+"a": 1,
+"t": "David captures Jerusalem and brings the ark there",
+"ref": "2 Samuel 5–6",
+"places": [
+"jerusalem"
+]
+},
+{
+"y": -966,
+"t": "Solomon begins building the temple",
+"ref": "1 Kings 6",
+"places": [
+"jerusalem"
+]
+},
+{
+"y": -950,
+"a": 1,
+"t": "The queen of Sheba visits Solomon",
+"ref": "1 Kings 10",
+"places": [
+"jerusalem"
+]
+},
+{
+"y": -931,
+"t": "The kingdom divides into Israel and Judah",
+"ref": "1 Kings 12",
+"places": [
+"shechem",
+"jerusalem"
+]
+},
+{
+"y": -860,
+"a": 1,
+"t": "Elijah confronts the prophets of Baal",
+"ref": "1 Kings 18"
+},
+{
+"y": -740,
+"a": 1,
+"t": "Isaiah sees the Lord in the temple",
+"ref": "Isaiah 6",
+"places": [
+"jerusalem"
+]
+},
+{
+"y": -722,
+"t": "Samaria falls to Assyria; the northern kingdom ends",
+"ref": "2 Kings 17",
+"places": [
+"samaria",
+"nineveh"
+]
+},
+{
+"y": -715,
+"t": "Hezekiah becomes king of Judah and leads reforms",
+"ref": "2 Kings 18",
+"places": [
+"jerusalem"
+]
+},
+{
+"y": -701,
+"t": "Sennacherib besieges Lachish; Jerusalem is spared",
+"ref": "2 Kings 18–19",
+"places": [
+"lachish",
+"jerusalem"
+]
+},
+{
+"y": -605,
+"t": "Daniel and others are taken to Babylon",
+"ref": "Daniel 1",
+"places": [
+"babylon"
+]
+},
+{
+"y": -586,
+"t": "Jerusalem and the temple are destroyed",
+"ref": "2 Kings 25",
+"places": [
+"jerusalem",
+"babylon"
+]
+},
+{
+"y": -539,
+"t": "Cyrus of Persia takes Babylon and lets the exiles go home",
+"ref": "Ezra 1",
+"places": [
+"babylon"
+]
+},
+{
+"y": -538,
+"t": "The first exiles return to Jerusalem",
+"ref": "Ezra 1–2",
+"places": [
+"babylon",
+"jerusalem"
+]
+},
+{
+"y": -516,
+"t": "The second temple is completed",
+"ref": "Ezra 6",
+"places": [
+"jerusalem"
+]
+},
+{
+"y": -479,
+"a": 1,
+"t": "Esther becomes queen in Susa",
+"ref": "Esther 2",
+"places": [
+"susa"
+]
+},
+{
+"y": -445,
+"t": "Nehemiah rebuilds Jerusalem's walls",
+"ref": "Nehemiah 1–6",
+"places": [
+"susa",
+"jerusalem"
+]
+},
+{
+"y": -430,
+"a": 1,
+"t": "Malachi, the last Old Testament prophet",
+"ref": "Malachi"
+},
+{
+"y": -167,
+"t": "The Maccabees revolt against the Greek king Antiochus IV",
+"ref": "Daniel 11 looks ahead to this",
+"places": [
+"jerusalem"
+]
+},
+{
+"y": -164,
+"t": "The temple is rededicated: the first Hanukkah",
+"ref": "John 10:22",
+"places": [
+"jerusalem"
+]
+},
+{
+"y": -63,
+"t": "The Roman general Pompey takes Jerusalem",
+"places": [
+"jerusalem"
+]
+},
+{
+"y": -37,
+"t": "Herod the Great becomes king of Judea",
+"places": [
+"jerusalem"
+]
+},
+{
+"y": -19,
+"t": "Herod begins rebuilding the temple",
+"ref": "John 2:20",
+"places": [
+"jerusalem"
+]
+},
+{
+"y": -5,
+"a": 1,
+"t": "Jesus is born in Bethlehem",
+"ref": "Luke 2, Matthew 1–2",
+"places": [
+"bethlehem"
+]
+},
+{
+"y": -4,
+"t": "Herod the Great dies",
+"ref": "Matthew 2:19",
+"places": [
+"jerusalem"
+]
+},
+{
+"y": 8,
+"a": 1,
+"t": "Jesus, aged twelve, in the temple",
+"ref": "Luke 2:41–52",
+"places": [
+"jerusalem",
+"nazareth"
+]
+},
+{
+"y": 26,
+"t": "Pontius Pilate becomes governor of Judea",
+"places": [
+"caesarea"
+]
+},
+{
+"y": 28,
+"a": 1,
+"t": "John baptizes Jesus; his ministry in Galilee begins",
+"ref": "Mark 1, Luke 3",
+"places": [
+"jordan",
+"capernaum"
+]
+},
+{
+"y": 30,
+"a": 1,
+"t": "Jesus is crucified and rises again (AD 30 or 33)",
+"ref": "Mark 15–16",
+"places": [
+"jerusalem"
+]
+},
+{
+"y": 30,
+"a": 1,
+"t": "Pentecost: the church is born",
+"ref": "Acts 2",
+"places": [
+"jerusalem"
+]
+},
+{
+"y": 34,
+"a": 1,
+"t": "Paul meets the risen Jesus near Damascus",
+"ref": "Acts 9",
+"places": [
+"damascus"
+]
+},
+{
+"y": 47,
+"a": 1,
+"t": "Paul's first journey",
+"ref": "Acts 13–14",
+"places": [
+"antioch",
+"salamis",
+"pisidian-antioch",
+"lystra"
+]
+},
+{
+"y": 49,
+"a": 1,
+"t": "The Jerusalem council",
+"ref": "Acts 15",
+"places": [
+"jerusalem",
+"antioch"
+]
+},
+{
+"y": 50,
+"a": 1,
+"t": "Paul's second journey: the gospel reaches Europe",
+"ref": "Acts 16–18",
+"places": [
+"philippi",
+"thessalonica",
+"athens",
+"corinth"
+]
+},
+{
+"y": 53,
+"a": 1,
+"t": "Paul's third journey: three years in Ephesus",
+"ref": "Acts 19–21",
+"places": [
+"ephesus",
+"corinth",
+"miletus"
+]
+},
+{
+"y": 59,
+"a": 1,
+"t": "Paul's voyage and shipwreck on the way to Rome",
+"ref": "Acts 27–28",
+"places": [
+"caesarea",
+"malta",
+"rome"
+]
+},
+{
+"y": 62,
+"t": "James, the brother of Jesus, is martyred in Jerusalem",
+"places": [
+"jerusalem"
+]
+},
+{
+"y": 65,
+"a": 1,
+"t": "Peter and Paul are martyred in Rome under Nero",
+"ref": "2 Timothy 4",
+"places": [
+"rome"
+]
+},
+{
+"y": 70,
+"t": "Roman legions destroy the temple",
+"ref": "Mark 13:2",
+"places": [
+"jerusalem"
+]
+},
+{
+"y": 95,
+"a": 1,
+"t": "John, exiled on Patmos, receives the Revelation",
+"ref": "Revelation 1",
+"places": [
+"patmos"
+]
+}
+],
+"world": [
+{
+"y": -2050,
+"a": 1,
+"r": "Egypt",
+"t": "Egypt's Middle Kingdom begins"
+},
+{
+"y": -2004,
+"a": 1,
+"r": "Mesopotamia",
+"t": "Ur falls to the Elamites"
+},
+{
+"y": -1792,
+"a": 1,
+"r": "Mesopotamia",
+"t": "Hammurabi becomes king of Babylon and later issues his law code"
+},
+{
+"y": -1550,
+"a": 1,
+"r": "Egypt",
+"t": "Egypt's New Kingdom begins, its age of empire"
+},
+{
+"y": -1479,
+"a": 1,
+"r": "Egypt",
+"t": "Hatshepsut rules Egypt as pharaoh"
+},
+{
+"y": -1279,
+"a": 1,
+"r": "Egypt",
+"t": "Ramesses II begins his long reign"
+},
+{
+"y": -1177,
+"a": 1,
+"r": "Mediterranean",
+"t": "The Bronze Age collapse: the Sea Peoples attack Egypt"
+},
+{
+"y": -1000,
+"a": 1,
+"r": "Phoenicia",
+"t": "Phoenicians spread their alphabet around the Mediterranean"
+},
+{
+"y": -776,
+"r": "Greece",
+"t": "The first Olympic Games"
+},
+{
+"y": -753,
+"a": 1,
+"r": "Rome",
+"t": "The legendary founding of Rome"
+},
+{
+"y": -705,
+"r": "Assyria",
+"t": "Sennacherib becomes king of Assyria"
+},
+{
+"y": -612,
+"r": "Assyria",
+"t": "Nineveh falls to the Babylonians and Medes"
+},
+{
+"y": -605,
+"r": "Babylon",
+"t": "Nebuchadnezzar becomes king of Babylon"
+},
+{
+"y": -563,
+"a": 1,
+"r": "India",
+"t": "The Buddha is born"
+},
+{
+"y": -509,
+"r": "Rome",
+"t": "The Roman Republic is founded"
+},
+{
+"y": -490,
+"r": "Greece",
+"t": "Athens defeats Persia at Marathon"
+},
+{
+"y": -480,
+"r": "Persia",
+"t": "Xerxes invades Greece. He is Ahasuerus in the book of Esther"
+},
+{
+"y": -447,
+"r": "Greece",
+"t": "Work begins on the Parthenon in Athens"
+},
+{
+"y": -399,
+"r": "Greece",
+"t": "Socrates is executed in Athens"
+},
+{
+"y": -332,
+"r": "Greece",
+"t": "Alexander the Great conquers Judea and Egypt"
+},
+{
+"y": -250,
+"a": 1,
+"r": "Egypt",
+"t": "The Septuagint: the Hebrew Scriptures translated into Greek in Alexandria"
+},
+{
+"y": -146,
+"r": "Rome",
+"t": "Rome destroys Carthage and Corinth"
+},
+{
+"y": -44,
+"r": "Rome",
+"t": "Julius Caesar is assassinated"
+},
+{
+"y": -27,
+"r": "Rome",
+"t": "Augustus becomes Rome's first emperor"
+},
+{
+"y": 14,
+"r": "Rome",
+"t": "Tiberius becomes emperor"
+},
+{
+"y": 41,
+"r": "Rome",
+"t": "Claudius becomes emperor"
+},
+{
+"y": 54,
+"r": "Rome",
+"t": "Nero becomes emperor"
+},
+{
+"y": 64,
+"r": "Rome",
+"t": "The great fire of Rome; Nero blames the Christians"
+},
+{
+"y": 79,
+"r": "Rome",
+"t": "Vesuvius buries Pompeii"
+},
+{
+"y": 80,
+"r": "Rome",
+"t": "The Colosseum opens"
+},
+{
+"y": 81,
+"r": "Rome",
+"t": "Domitian becomes emperor"
+}
+],
+"bookYears": {
+"sarah": -2090,
+"red-tent": -1920,
+"pharaohs-daughter": -1520,
+"counted-stars": -1446,
+"shelter": -1400,
+"lineage-grace": -1100,
+"michal": -1020,
+"secret-chord": -1000,
+"sheba": -950,
+"gods-kings": -730,
+"isaiahs-daughter": -701,
+"return-to-me": -538,
+"hadassah": -479,
+"harvest-rubies": -446,
+"ben-hur": 26,
+"bronze-bow": 28,
+"pontius-pilate": 30,
+"secret-kingdom": 30,
+"the-robe": 31,
+"quo-vadis": 64,
+"the-source": -2100
+},
+"chapterYears": {
+"gospel": {
+"start": 28,
+"end": 30,
+"infancy": -5
+},
+"Acts": [
+30,
+30,
+30,
+31,
+31,
+32,
+33,
+34,
+34,
+38,
+40,
+44,
+47,
+47,
+49,
+50,
+50,
+51,
+53,
+56,
+57,
+57,
+57,
+57,
+59,
+59,
+59,
+60
+],
+"written": {
+"James": 48,
+"Galatians": 49,
+"1 Thessalonians": 51,
+"2 Thessalonians": 51,
+"1 Corinthians": 55,
+"2 Corinthians": 56,
+"Romans": 57,
+"Ephesians": 61,
+"Philippians": 61,
+"Colossians": 61,
+"Philemon": 61,
+"1 Timothy": 63,
+"Titus": 63,
+"2 Timothy": 66,
+"Hebrews": 67,
+"1 Peter": 64,
+"2 Peter": 66,
+"Jude": 68,
+"1 John": 90,
+"2 John": 90,
+"3 John": 90,
+"Revelation": 95
+}
+}
+}

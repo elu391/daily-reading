@@ -161,8 +161,8 @@ footer select{font:inherit;color:var(--ink);background:var(--surface);border:1px
 .rstatus{font-size:.88rem;color:var(--muted)}
 
 /* tabs and progress */
-.tabs{display:grid;grid-template-columns:1fr 1fr 1fr;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:4px;gap:4px}
-.tabs button{border:0;background:none;color:var(--muted);font:600 .95rem var(--body);padding:9px 0;border-radius:9px;cursor:pointer}
+.tabs{display:grid;grid-template-columns:repeat(4,1fr);background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:4px;gap:4px}
+.tabs button{border:0;background:none;color:var(--muted);font:600 .88rem var(--body);padding:9px 0;border-radius:9px;cursor:pointer}
 .tabs button[aria-selected="true"]{background:var(--accent);color:var(--accent-ink)}
 .tabs button:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
 .view{display:flex;flex-direction:column;gap:22px}
@@ -224,6 +224,32 @@ footer select{font:inherit;color:var(--ink);background:var(--surface);border:1px
 .addform input,.addform select,.addform textarea{box-sizing:border-box;width:100%;font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
 .addform textarea{min-height:70px;resize:vertical}
 .shelf-count{font-size:.85rem;color:var(--muted);margin:0}
+
+/* timeline */
+.tl-tools{display:flex;flex-direction:column;gap:8px}
+.tl{position:relative;display:flex;flex-direction:column;gap:10px;padding-left:0}
+.tl::before{content:"";position:absolute;left:4.6em;top:0;bottom:0;width:2px;background:var(--line)}
+.tl-era{position:relative;margin:14px 0 2px;background:var(--accent-soft);border-radius:12px;padding:10px 14px;z-index:1}
+.tl-era b{font-family:var(--display);font-size:1.1rem;font-weight:600;display:block}
+.tl-era span{font-size:.8rem;color:var(--muted)}
+.tl-item{position:relative;display:grid;grid-template-columns:4.1em 1fr;gap:18px;align-items:start}
+.tl-year{font-size:.75rem;font-weight:600;color:var(--muted);text-align:right;padding-top:9px;font-variant-numeric:tabular-nums;line-height:1.2}
+.tl-item::after{content:"";position:absolute;left:calc(4.6em - 4px);top:12px;width:10px;height:10px;border-radius:50%;background:var(--accent);border:2px solid var(--bg)}
+.tl-card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:9px 12px;display:flex;flex-direction:column;gap:3px;min-width:0}
+.tl-card .tt{font-weight:500;line-height:1.35}
+.tl-card .rf{font-size:.8rem;color:var(--muted)}
+.tl-card .linkbtn{align-self:flex-start;font-size:.82rem}
+.tl-item.novel::after{background:var(--warm)}
+.tl-item.novel .tl-card{border-color:var(--warm);background:var(--warm-soft)}
+.tl-item.novel .tt{font-family:var(--display);font-weight:600}
+.tl-item.world::after{background:var(--pin-faint);width:8px;height:8px;left:calc(4.6em - 3px)}
+.tl-item.world .tl-card{background:transparent;border-style:dashed}
+.tl-item.world .tt{font-size:.9rem;color:var(--muted)}
+.tl-item.world .rg{font-size:.7rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.tl-item.here::after{background:var(--done);width:14px;height:14px;left:calc(4.6em - 6px);top:10px}
+.tl-item.here .tl-card{background:var(--done-soft);border-color:var(--done)}
+.tl-item.here .tt{color:var(--done);font-weight:600}
+.tl-note{font-size:.8rem;color:var(--muted);margin:0}
 </style>
 </head>
 <body>
@@ -240,6 +266,7 @@ footer select{font:inherit;color:var(--ink);background:var(--surface);border:1px
     <button type="button" role="tab" id="tab-today" aria-selected="true">Today</button>
     <button type="button" role="tab" id="tab-progress" aria-selected="false">Progress</button>
     <button type="button" role="tab" id="tab-books" aria-selected="false">Books</button>
+    <button type="button" role="tab" id="tab-time" aria-selected="false">Timeline</button>
   </div>
 
   <div class="view" id="view-today">
@@ -296,7 +323,7 @@ footer select{font:inherit;color:var(--ink);background:var(--surface);border:1px
       </div>
       <div class="map-box" id="map-box"><div class="map-loading" id="map-loading">Loading the map</div></div>
       <div class="map-foot">
-        <div class="rrow" id="map-book" hidden><b id="map-book-title" style="font-size:.9rem"></b><button class="linkbtn" type="button" id="map-back">Back to the Bookshelf</button></div>
+        <div class="rrow" id="map-book" hidden><b id="map-book-title" style="font-size:.9rem"></b><button class="linkbtn" type="button" id="map-back">Back</button></div>
         <div class="places" id="place-chips" aria-label="Places in this chapter"></div>
         <p class="count" id="map-count" hidden></p>
         <div class="legend" id="legend" aria-label="Journeys"></div>
@@ -408,6 +435,16 @@ footer select{font:inherit;color:var(--ink);background:var(--surface);border:1px
         </div>
       </div>
     </section>
+  </div>
+
+  <div class="view" id="view-time" hidden>
+    <section class="block tl-tools">
+      <span class="eyebrow">From Abraham to Rome</span>
+      <div class="filters" id="tl-filters" aria-label="Show on the timeline"></div>
+      <div class="rrow"><button class="btn read" type="button" id="tl-jump" style="flex:none;min-height:40px">Jump to where you're reading</button></div>
+      <p class="tl-note" id="tl-note"></p>
+    </section>
+    <div class="tl" id="tl"></div>
   </div>
 
   <footer>
@@ -537,6 +574,7 @@ footer select{font:inherit;color:var(--ink);background:var(--surface);border:1px
     mapRender();
     if(typeof renderProgress==="function")renderProgress();
     if(typeof renderShelf==="function")renderShelf();
+    if(typeof renderTimeline==="function")renderTimeline();
   }
 
   function renderTogether(){
@@ -571,15 +609,17 @@ footer select{font:inherit;color:var(--ink);background:var(--surface);border:1px
   var view="today";
   function openChapter(i){sel=i;placeSel=null;setView("today");render();mapFrame(true);window.scrollTo({top:0,behavior:"smooth"})}
   function setView(v){
-    view=v;$("view-today").hidden=v!=="today";$("view-progress").hidden=v!=="progress";$("view-books").hidden=v!=="books";
-    $("tab-today").setAttribute("aria-selected",v==="today");$("tab-progress").setAttribute("aria-selected",v==="progress");$("tab-books").setAttribute("aria-selected",v==="books");
+    view=v;$("view-today").hidden=v!=="today";$("view-progress").hidden=v!=="progress";$("view-books").hidden=v!=="books";$("view-time").hidden=v!=="time";
+    $("tab-today").setAttribute("aria-selected",v==="today");$("tab-progress").setAttribute("aria-selected",v==="progress");$("tab-books").setAttribute("aria-selected",v==="books");$("tab-time").setAttribute("aria-selected",v==="time");
     if(v==="progress")renderProgress();
     if(v==="books")renderShelf();
+    if(v==="time")renderTimeline();
     if(v!=="today"&&mapMode==="book")setMode("today");
   }
   $("tab-today").addEventListener("click",function(){setView("today")});
   $("tab-progress").addEventListener("click",function(){setView("progress");window.scrollTo({top:0})});
   $("tab-books").addEventListener("click",function(){setView("books");window.scrollTo({top:0})});
+  $("tab-time").addEventListener("click",function(){setView("time");setTimeout(function(){var h=$("tl-here");if(h)h.scrollIntoView({block:"center"})},30)});
   function dateOf(i){var w=Math.floor(i/5),d=i%5;return new Date(START.getFullYear(),START.getMonth(),START.getDate()+w*7+d)}
   function fmtDate(d){return d.toLocaleDateString(undefined,{weekday:"long",month:"long",day:"numeric",year:"numeric"})}
   function renderProgress(){
@@ -700,7 +740,7 @@ footer select{font:inherit;color:var(--ink);background:var(--surface);border:1px
       var act=document.createElement("div");act.className="actions2";
       if(b.places&&b.places.length&&geo){
         var mb=document.createElement("button");mb.type="button";mb.className="linkbtn";mb.textContent="See places on the map";
-        mb.addEventListener("click",function(){showBookOnMap(b)});act.appendChild(mb);
+        mb.addEventListener("click",function(){mapReturn="books";showBookOnMap(b)});act.appendChild(mb);
       }
       if(b.mine){
         var del=document.createElement("button");del.type="button";del.className="linkbtn";del.textContent="Remove from my shelf";
@@ -727,7 +767,78 @@ footer select{font:inherit;color:var(--ink);background:var(--surface);border:1px
     msg.hidden=false;msg.textContent="Added \u201c"+t+"\u201d to your shelf as Want to read.";
     eraFilter="any";statusFilter="any";renderShelf();
   });
-  $("map-back").addEventListener("click",function(){setMode("today");setView("books");window.scrollTo({top:0})});
+  $("map-back").addEventListener("click",function(){setMode("today");setView(mapReturn);if(mapReturn==="time"){var h=$("tl-here");if(h)h.scrollIntoView({block:"center"})}else window.scrollTo({top:0})});
+
+  /* ---------- Timeline ---------- */
+  var tline=null,tlShow={bible:true,novels:true,world:true},mapReturn="books";
+  function yr(y,a){var s=y<0?(-y)+" BC":"AD "+y;return (a?"about ":"")+s}
+  function chapterYear(i){
+    if(!tline)return null;
+    var cy=tline.chapterYears,name=CH[i],book=name.replace(/ \d+$/,""),n=+name.split(" ").pop();
+    var total=BOOKS.filter(function(b){return b[0]===book})[0][1];
+    if(book==="Acts")return {y:cy.Acts[n-1],kind:"events"};
+    if(cy.written[book])return {y:cy.written[book],kind:"written"};
+    var g=cy.gospel;
+    if((book==="Matthew"||book==="Luke")&&n<=2)return {y:g.infancy,kind:"events"};
+    var startCh=(book==="Matthew"||book==="Luke")?3:1;
+    return {y:Math.round(g.start+(g.end-g.start)*(n-startCh)/Math.max(1,total-startCh)),kind:"events"};
+  }
+  function renderTimeline(){
+    if(view!=="time"||!tline)return;
+    var f=$("tl-filters");f.innerHTML="";
+    [["bible","Bible events"],["novels","Novels"],["world","World history"]].forEach(function(o){
+      var b=document.createElement("button");b.type="button";b.className="chip";b.textContent=o[1];
+      b.setAttribute("aria-pressed",tlShow[o[0]]?"true":"false");
+      b.addEventListener("click",function(){tlShow[o[0]]=!tlShow[o[0]];renderTimeline()});f.appendChild(b);
+    });
+    f.querySelectorAll(".chip").forEach(function(c){c.style.opacity=c.getAttribute("aria-pressed")==="true"?"1":".5"});
+    $("tl-note").textContent=tline.note;
+    var items=[];
+    if(tlShow.bible)tline.events.forEach(function(e){items.push({y:e.y,k:"bible",e:e})});
+    if(tlShow.world)tline.world.forEach(function(e){items.push({y:e.y,k:"world",e:e})});
+    if(tlShow.novels&&shelf){
+      allBooks().forEach(function(b){
+        var y=tline.bookYears[b.id];
+        if(y===undefined){var er=tline.eras.filter(function(x){return x.id===b.era})[0];y=er?Math.round((er.from+er.to)/2):100}
+        items.push({y:y,k:"novel",e:b});
+      });
+    }
+    var cy=chapterYear(Math.max(sel,0));
+    if(cy)items.push({y:cy.y,k:"here",e:cy});
+    var order={here:0,bible:1,novel:2,world:3};
+    items.sort(function(a,b){return a.y-b.y||order[a.k]-order[b.k]});
+    var box=$("tl");box.innerHTML="";var eraIdx=-1;
+    items.forEach(function(it){
+      while(eraIdx+1<tline.eras.length&&it.y>=tline.eras[eraIdx+1].from){
+        eraIdx++;var er=tline.eras[eraIdx],h=document.createElement("div");h.className="tl-era";
+        var b=document.createElement("b");b.textContent=er.name;var sp=document.createElement("span");sp.textContent=yr(er.from,er.from<-900)+" to "+yr(er.to,er.to<-900);
+        h.appendChild(b);h.appendChild(sp);box.appendChild(h);
+      }
+      var row=document.createElement("div");row.className="tl-item "+it.k;
+      var yl=document.createElement("div");yl.className="tl-year";
+      var card=document.createElement("div");card.className="tl-card";
+      function line(cls,txt){var d=document.createElement("span");d.className=cls;d.textContent=txt;card.appendChild(d);return d}
+      if(it.k==="bible"){yl.textContent=yr(it.e.y,it.e.a);line("tt",it.e.t);if(it.e.ref)line("rf",it.e.ref)}
+      else if(it.k==="world"){yl.textContent=yr(it.e.y,it.e.a);line("rg",it.e.r);line("tt",it.e.t)}
+      else if(it.k==="novel"){
+        yl.textContent=it.e.id==="the-source"?"all eras":yr(it.y,it.y<-900);
+        line("tt",it.e.title);var st=bookStatus(it.e.id),lab={want:"Want to read",reading:"Reading now",done:"Finished"}[st];
+        line("rf",(it.e.author||"")+(lab?" · "+lab:""));
+      }else{
+        yl.textContent=yr(it.y,true);row.id="tl-here";
+        line("tt","You are here: "+CH[Math.max(sel,0)]);
+        line("rf",it.e.kind==="written"?"This letter was written about "+yr(it.y,false)+".":"These events happened about "+yr(it.y,false)+".");
+      }
+      var places=it.k==="bible"?it.e.places:it.k==="novel"?it.e.places:it.k==="here"?placesFor(CH[Math.max(sel,0)]):null;
+      if(places&&places.length&&geo){
+        var mb=document.createElement("button");mb.type="button";mb.className="linkbtn";mb.textContent="See on the map";
+        var title=it.k==="bible"?it.e.t:it.k==="novel"?it.e.title:CH[Math.max(sel,0)];
+        mb.addEventListener("click",function(){mapReturn="time";showBookOnMap({title:title,places:places})});card.appendChild(mb);
+      }
+      row.appendChild(yl);row.appendChild(card);box.appendChild(row);
+    });
+  }
+  $("tl-jump").addEventListener("click",function(){var h=$("tl-here");if(h)h.scrollIntoView({behavior:"smooth",block:"center"})});
   /* ---------- Map ---------- */
   var mapMode="today", placeSel=null, hiddenJ={}, bookKeys=[], bookTitle="";
   var svg=null,gBase=null,gLegs=null,gPins=null,proj=null,zoom=null,curT=null,W=0,H=0;
@@ -898,6 +1009,7 @@ footer select{font:inherit;color:var(--ink);background:var(--surface);border:1px
   function getJSON(u){return fetch(u).then(function(r){if(!r.ok)throw new Error(r.status);return r.json()})}
   getJSON("notes.json").then(function(j){notes=j;render()}).catch(function(){$("note").textContent="The historical note couldn't load. Check your connection and reopen the page."});
   getJSON("books.json").then(function(j){shelf=j;fillEraSelect();render()}).catch(function(){$("shelf").textContent="The bookshelf couldn't load. Check your connection and reopen the app."});
+  getJSON("timeline.json").then(function(j){tline=j;render()}).catch(function(){$("tl").textContent="The timeline couldn't load. Check your connection and reopen the app."});
   getJSON("talk.json").then(function(j){talk=j;render()}).catch(function(){$("talk").textContent="Today's question couldn't load. Check your connection and reopen the page."});
   Promise.all([getJSON("places.json"),getJSON("base.json")]).then(function(r){
     geo=r[0];geo.base=r[1];
