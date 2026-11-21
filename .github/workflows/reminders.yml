@@ -4,6 +4,11 @@ on:
   schedule:
     - cron: '*/15 * * * *'
   workflow_dispatch:
+    inputs:
+      test:
+        description: 'Send a test notification now'
+        type: boolean
+        default: true
 
 permissions:
   contents: write
@@ -26,6 +31,7 @@ jobs:
         env:
           VAPID_PRIVATE_KEY: ${{ secrets.VAPID_PRIVATE_KEY }}
           GROUP_CODES: ${{ secrets.GROUP_CODES }}
+          TEST: ${{ inputs.test }}
       # GitHub pauses scheduled jobs in repositories with no commits for 60 days.
       # Once a month this records the date so the reminders keep running.
       - name: Keep the schedule active
