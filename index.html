@@ -159,6 +159,46 @@ footer select{font:inherit;color:var(--ink);background:var(--surface);border:1px
 .rrow input[type=time]{font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:6px 8px}
 .remind .btn{flex:none}
 .rstatus{font-size:.88rem;color:var(--muted)}
+
+/* tabs and progress */
+.tabs{display:grid;grid-template-columns:1fr 1fr;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:4px;gap:4px}
+.tabs button{border:0;background:none;color:var(--muted);font:600 .95rem var(--body);padding:9px 0;border-radius:9px;cursor:pointer}
+.tabs button[aria-selected="true"]{background:var(--accent);color:var(--accent-ink)}
+.tabs button:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.view{display:flex;flex-direction:column;gap:22px}
+.pcard{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:18px;display:flex;flex-direction:column;gap:10px}
+.big{font-family:var(--display);font-weight:600;font-size:2.2rem;line-height:1;font-variant-numeric:tabular-nums}
+.big small{font-family:var(--body);font-size:.95rem;font-weight:500;color:var(--muted);margin-left:6px}
+.bar{height:10px;border-radius:99px;background:var(--line);overflow:hidden}
+.bar i{display:block;height:100%;background:var(--done);border-radius:99px}
+.facts{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:4px}
+.facts div{background:var(--bg);border-radius:10px;padding:8px 10px}
+.facts b{display:block;font-size:1.1rem;font-variant-numeric:tabular-nums}
+.facts span{font-size:.75rem;color:var(--muted)}
+.finish{margin:0;font-size:.95rem}
+.miss-list{display:flex;flex-wrap:wrap;gap:6px}
+.miss-list button{border:1.5px dashed var(--warm);background:var(--warm-soft);color:var(--ink);border-radius:999px;padding:6px 12px;font:500 .85rem var(--body);cursor:pointer}
+.books{display:flex;flex-direction:column;gap:10px}
+.book{display:grid;grid-template-columns:7.2em 1fr;gap:10px;align-items:start}
+.book .bn{font-size:.85rem;font-weight:600;line-height:1.25}
+.book .bn span{display:block;font-weight:400;color:var(--muted);font-size:.75rem;font-variant-numeric:tabular-nums}
+.cells{display:flex;flex-wrap:wrap;gap:3px;min-width:0}
+.cell{width:14px;height:14px;border-radius:3px;border:1.5px solid var(--line);background:transparent;padding:0;cursor:pointer}
+.cell.d{background:var(--done);border-color:var(--done)}
+.cell.m{border-color:var(--warm);border-style:dashed}
+.cell.t{border-color:var(--accent);border-width:2px}
+.book.complete .bn{color:var(--done)}
+.cal-half{display:flex;flex-direction:column;gap:4px}
+.cal-label{font-size:.75rem;color:var(--muted)}
+.cal{display:grid;grid-template-columns:repeat(26,1fr);gap:2px}
+.wk{display:grid;grid-template-rows:repeat(5,1fr);gap:2px}
+.wk i{display:block;aspect-ratio:1;border-radius:2px;background:var(--line);opacity:.55}
+.wk i.d{background:var(--done);opacity:1}
+.wk i.m{background:var(--warm);opacity:.85}
+.wk i.t{outline:2px solid var(--accent);outline-offset:0;opacity:1}
+.legend2{display:flex;flex-wrap:wrap;gap:12px;font-size:.78rem;color:var(--muted)}
+.legend2 span{display:inline-flex;align-items:center;gap:5px}
+.legend2 i{width:10px;height:10px;border-radius:2px;display:inline-block}
 </style>
 </head>
 <body>
@@ -171,6 +211,12 @@ footer select{font:inherit;color:var(--ink);background:var(--surface);border:1px
     </span>
   </header>
 
+  <div class="tabs" role="tablist">
+    <button type="button" role="tab" id="tab-today" aria-selected="true">Today</button>
+    <button type="button" role="tab" id="tab-progress" aria-selected="false">Progress</button>
+  </div>
+
+  <div class="view" id="view-today">
   <div class="banner" id="banner" hidden></div>
 
   <div class="hero">
@@ -276,6 +322,42 @@ footer select{font:inherit;color:var(--ink);background:var(--surface);border:1px
       </div>
     </div>
   </section>
+
+  </div>
+
+  <div class="view" id="view-progress" hidden>
+    <div class="pcard">
+      <span class="eyebrow">New Testament</span>
+      <div class="big" id="p-count">0<small>of 260 chapters</small></div>
+      <div class="bar" aria-hidden="true"><i id="p-bar" style="width:0%"></i></div>
+      <div class="facts">
+        <div><b id="p-pct">0%</b><span>complete</span></div>
+        <div><b id="p-week">1</b><span>week of 52</span></div>
+        <div><b id="p-books">0</b><span>books finished</span></div>
+      </div>
+      <p class="finish" id="p-finish"></p>
+    </div>
+
+    <section class="block" id="p-missed-wrap">
+      <span class="eyebrow">Missed chapters</span>
+      <div class="miss-list" id="p-missed"></div>
+      <p class="hint" id="p-missed-none">Nothing missed. You're all caught up.</p>
+    </section>
+
+    <section class="block">
+      <span class="eyebrow">Your year</span>
+      <div class="pcard">
+        <div class="cal-half"><span class="cal-label" id="cal-l1"></span><div class="cal" id="cal-1"></div></div>
+        <div class="cal-half"><span class="cal-label" id="cal-l2"></span><div class="cal" id="cal-2"></div></div>
+        <div class="legend2"><span><i style="background:var(--done)"></i>Read</span><span><i style="background:var(--warm)"></i>Missed</span><span><i style="background:var(--line)"></i>Ahead</span></div>
+      </div>
+    </section>
+
+    <section class="block">
+      <span class="eyebrow">Book by book</span>
+      <div class="pcard"><div class="books" id="p-books-grid"></div></div>
+    </section>
+  </div>
 
   <footer>
     <label>Bible version
@@ -402,6 +484,7 @@ footer select{font:inherit;color:var(--ink);background:var(--surface);border:1px
 
     renderTogether();
     mapRender();
+    if(typeof renderProgress==="function")renderProgress();
   }
 
   function renderTogether(){
@@ -431,6 +514,81 @@ footer select{font:inherit;color:var(--ink);background:var(--surface);border:1px
     render();save();
   });
 
+
+  /* ---------- Progress ---------- */
+  var view="today";
+  function openChapter(i){sel=i;placeSel=null;setView("today");render();mapFrame(true);window.scrollTo({top:0,behavior:"smooth"})}
+  function setView(v){
+    view=v;$("view-today").hidden=v!=="today";$("view-progress").hidden=v!=="progress";
+    $("tab-today").setAttribute("aria-selected",v==="today");$("tab-progress").setAttribute("aria-selected",v==="progress");
+    if(v==="progress")renderProgress();
+  }
+  $("tab-today").addEventListener("click",function(){setView("today")});
+  $("tab-progress").addEventListener("click",function(){setView("progress");window.scrollTo({top:0})});
+  function dateOf(i){var w=Math.floor(i/5),d=i%5;return new Date(START.getFullYear(),START.getMonth(),START.getDate()+w*7+d)}
+  function fmtDate(d){return d.toLocaleDateString(undefined,{weekday:"long",month:"long",day:"numeric",year:"numeric"})}
+  function renderProgress(){
+    if(view!=="progress")return;
+    var n=0;for(var k in state.done){if(+k>=0&&+k<260)n++}
+    var pct=Math.round(n/260*100);
+    $("p-count").firstChild.nodeValue=n;$("p-bar").style.width=(n/260*100)+"%";$("p-pct").textContent=pct+"%";
+    $("p-week").textContent=started?Math.min(week+1,52):1;
+    // books
+    var grid=$("p-books-grid");grid.innerHTML="";var finished=0,idx=0;
+    BOOKS.forEach(function(b){
+      var got=0,row=document.createElement("div");row.className="book";
+      var cells=document.createElement("div");cells.className="cells";
+      for(var c=0;c<b[1];c++){
+        var i=idx+c,btn=document.createElement("button");btn.type="button";btn.className="cell";
+        if(isDone(i)){btn.classList.add("d");got++}
+        else if(i<dueIdx||(i===dueIdx&&isWeekend))btn.classList.add("m");
+        if(i===dueIdx&&!isWeekend)btn.classList.add("t");
+        btn.setAttribute("aria-label",CH[i]+(isDone(i)?", read":""));btn.title=CH[i];
+        (function(x){btn.addEventListener("click",function(){openChapter(x)})})(i);
+        cells.appendChild(btn);
+      }
+      if(got===b[1]){finished++;row.classList.add("complete")}
+      var bn=document.createElement("div");bn.className="bn";bn.textContent=b[0];
+      var sp=document.createElement("span");sp.textContent=got+" of "+b[1];bn.appendChild(sp);
+      row.appendChild(bn);row.appendChild(cells);grid.appendChild(row);idx+=b[1];
+    });
+    $("p-books").textContent=finished;
+    // missed
+    var missed=[];for(var m=0;m<=dueIdx&&m<260;m++){if(!isDone(m)&&!(m===dueIdx&&!isWeekend))missed.push(m)}
+    var ml=$("p-missed");ml.innerHTML="";
+    missed.slice(0,12).forEach(function(i){var b=document.createElement("button");b.type="button";b.textContent=CH[i];b.addEventListener("click",function(){openChapter(i)});ml.appendChild(b)});
+    if(missed.length>12){var more=document.createElement("span");more.className="hint";more.textContent="and "+(missed.length-12)+" more";ml.appendChild(more)}
+    $("p-missed-none").hidden=missed.length>0||!started;
+    $("p-missed-wrap").hidden=!started;
+    // finish date
+    var fin=$("p-finish"),planEnd=dateOf(259);
+    if(n>=260)fin.textContent="You've read the whole New Testament. Well done!";
+    else if(!started)fin.textContent="Starts Monday, November 23. On schedule, you'll finish on "+fmtDate(planEnd)+".";
+    else{
+      var elapsed=Math.min(dueIdx+1,260); // weekdays so far, including today
+      var ahead=n-elapsed;
+      if(ahead>=-1)fin.textContent=(ahead>0?"You're "+ahead+" chapters ahead. ":"")+"On track to finish on "+fmtDate(planEnd)+".";
+      else{
+        var rate=elapsed>=10?Math.max(n/elapsed,.2):1; // chapters per weekday
+        var left=Math.ceil((260-n)/rate),d=new Date(now);while(left>0){d.setDate(d.getDate()+1);var wd=d.getDay();if(wd>0&&wd<6)left--}
+        fin.textContent="You're "+(-ahead)+" chapters behind. At your current pace you'd finish around "+fmtDate(d)+". Weekends are a good time to catch up.";
+      }
+    }
+    // calendar
+    [1,2].forEach(function(h){
+      var cal=$("cal-"+h);cal.innerHTML="";
+      for(var w=(h-1)*26;w<h*26;w++){
+        var col=document.createElement("div");col.className="wk";
+        for(var d=0;d<5;d++){var i=w*5+d,c=document.createElement("i");
+          if(isDone(i))c.className="d";else if(i<dueIdx||(i===dueIdx&&isWeekend))c.className="m";
+          if(i===dueIdx&&!isWeekend)c.classList.add("t");
+          c.title=CH[i];col.appendChild(c)}
+        cal.appendChild(col);
+      }
+      var a=dateOf((h-1)*130),z=dateOf(h*130-1),f={month:"short",year:"numeric"};
+      $("cal-l"+h).textContent=a.toLocaleDateString(undefined,f)+" to "+z.toLocaleDateString(undefined,f);
+    });
+  }
   /* ---------- Map ---------- */
   var mapMode="today", placeSel=null, hiddenJ={};
   var svg=null,gBase=null,gLegs=null,gPins=null,proj=null,zoom=null,curT=null,W=0,H=0;
