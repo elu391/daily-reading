@@ -5,7 +5,7 @@ service cloud.firestore {
     match /groups/{group}/people/{person} {
       allow read: if group.size() >= 20;
       allow create, update: if group.size() >= 20
-        && request.resource.data.keys().hasOnly(['name', 'done', 'updated'])
+        && request.resource.data.keys().hasOnly(['name', 'done', 'updated', 'push', 'remind', 'nudge', 'tz', 'sent'])
         && request.resource.data.name is string && request.resource.data.name.size() <= 30;
     }
   }

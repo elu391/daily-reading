@@ -149,6 +149,16 @@ footer select{font:inherit;color:var(--ink);background:var(--surface);border:1px
 .linkbtn{background:none;border:0;padding:0;color:var(--accent);font:600 .9rem var(--body);cursor:pointer;text-decoration:underline}
 .invite{display:flex;flex-direction:column;gap:8px}
 .invite code{display:block;word-break:break-all;background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:8px 10px;font-size:.8rem;color:var(--muted)}
+
+/* reminders */
+.remind{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:12px}
+.remind p{margin:0}
+.rrow{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.rrow label{display:flex;align-items:center;gap:10px;font-weight:500}
+.rrow input[type=checkbox]{width:20px;height:20px;accent-color:var(--accent)}
+.rrow input[type=time]{font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:6px 8px}
+.remind .btn{flex:none}
+.rstatus{font-size:.88rem;color:var(--muted)}
 </style>
 </head>
 <body>
@@ -241,6 +251,30 @@ footer select{font:inherit;color:var(--ink);background:var(--surface);border:1px
   <section class="block" id="catchup-wrap" hidden>
     <h2>Catch up this weekend</h2>
     <ul class="catchup" id="catchup"></ul>
+  </section>
+
+  <section class="block" id="remind-wrap" hidden>
+    <span class="eyebrow">Reminders</span>
+    <div class="remind">
+      <p class="hint" id="remind-help" hidden>To get reminders on iPhone, add this app to your Home Screen first (Share, then Add to Home Screen), then open it from the new icon.</p>
+      <div id="remind-form">
+        <div class="rrow">
+          <label><input type="checkbox" id="r-on" checked> Remind me to read</label>
+          <input type="time" id="r-time" value="07:00" aria-label="Reminder time">
+        </div>
+        <p class="rstatus" style="margin:2px 0 10px">Weekdays only, and skipped if you've already read that day's chapter.</p>
+        <div class="rrow">
+          <label><input type="checkbox" id="n-on" checked> Evening nudge</label>
+          <input type="time" id="n-time" value="19:30" aria-label="Evening nudge time">
+        </div>
+        <p class="rstatus" style="margin:2px 0 12px">Only if your husband has read the day's chapter and you haven't yet.</p>
+        <div class="rrow">
+          <button class="btn mark" type="button" id="r-save">Turn on reminders</button>
+          <button class="linkbtn" type="button" id="r-off" hidden>Turn off</button>
+        </div>
+        <p class="rstatus" id="r-status" style="margin-top:10px"></p>
+      </div>
+    </div>
   </section>
 
   <footer>
@@ -625,7 +659,7 @@ footer select{font:inherit;color:var(--ink);background:var(--surface);border:1px
         $("sync").classList.toggle("on",!off);
         $("sync-label").textContent=off?(snap.metadata.hasPendingWrites?"Offline. Will sync when you're back online":"Offline"):"Synced";
         var mine=null,list=[];
-        snap.docs.forEach(function(d){var data=d.data()||{};names[d.id]=data.name||"";if(d.id===me)mine=data.done||{};else list.push({id:d.id,done:data.done||{}})});
+        snap.docs.forEach(function(d){var data=d.data()||{};names[d.id]=data.name||"";if(d.id===me){mine=data.done||{};myDoc=data}else list.push({id:d.id,done:data.done||{}})});
         if(mine===null){me=null;showWho(snap.docs.map(function(d){return {id:d.id,name:(d.data()||{}).name}}));return}
         if(first){
           first=false;var merged={},changed=false,k;
@@ -634,7 +668,7 @@ footer select{font:inherit;color:var(--ink);background:var(--surface);border:1px
           state={done:merged};if(changed)save();
         }else if(!snap.metadata.hasPendingWrites)state={done:mine};
         lsSet("brp-progress",JSON.stringify(state));
-        others=list;render();
+        others=list;render();showRemind();
       },function(){$("sync-label").textContent="Couldn't connect. Saved on this device"});
     }
 
@@ -644,10 +678,54 @@ footer select{font:inherit;color:var(--ink);background:var(--surface);border:1px
       else if(navigator.clipboard){navigator.clipboard.writeText(url).then(function(){$("share-link").textContent="Link copied"}).catch(function(){})}
     });
     $("switch-person").addEventListener("click",function(){
-      if(unsub)unsub();unsub=null;me=null;first=true;
+      if(unsub)unsub();unsub=null;me=null;first=true;showRemind();
       fs.collection("groups").doc(group).collection("people").get().then(function(s){showWho(s.docs.map(function(d){return {id:d.id,name:(d.data()||{}).name}}))});
     });
 
+
+    /* ---- reminders ---- */
+    var VAPID="BD39y9e5WtcZr-02tVBLuyBaQQ3RRMuFota8WSMNU0zGpMwNgfODb8348K4rBHekxBVm98VyDBMp458_UWptEZw";
+    var myDoc={};
+    function b64(u){var p="=".repeat((4-u.length%4)%4),r=atob((u+p).replace(/-/g,"+").replace(/_/g,"/")),a=new Uint8Array(r.length);for(var i=0;i<r.length;i++)a[i]=r.charCodeAt(i);return a}
+    var pushOK=("serviceWorker" in navigator)&&("PushManager" in window)&&("Notification" in window);
+    function showRemind(){
+      $("remind-wrap").hidden=!me;
+      if(!me)return;
+      $("remind-help").hidden=pushOK;$("remind-form").hidden=!pushOK;
+      if(!pushOK)return;
+      var on=!!myDoc.push;
+      if(document.activeElement&&/^(r|n)-/.test(document.activeElement.id))return;
+      if(on){
+        $("r-on").checked=!!myDoc.remind;if(myDoc.remind)$("r-time").value=myDoc.remind;
+        $("n-on").checked=!!myDoc.nudge;if(myDoc.nudge)$("n-time").value=myDoc.nudge;
+      }
+      $("r-save").textContent=on?"Save reminder times":"Turn on reminders";
+      $("r-off").hidden=!on;
+      if(!$("r-status").dataset.msg)$("r-status").textContent=on?"Reminders are on for this phone.":"";
+    }
+    function status(t){$("r-status").textContent=t;$("r-status").dataset.msg=t?"1":""}
+    $("r-save").addEventListener("click",function(){
+      if(!me)return;
+      status("Turning on reminders.");
+      Notification.requestPermission().then(function(perm){
+        if(perm!=="granted"){status("Notifications are blocked. Allow them for this app in your phone's Settings, then try again.");throw 0}
+        return navigator.serviceWorker.ready;
+      }).then(function(reg){
+        return reg.pushManager.getSubscription().then(function(sub){return sub||reg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:b64(VAPID)})});
+      }).then(function(sub){
+        var tz="UTC";try{tz=Intl.DateTimeFormat().resolvedOptions().timeZone||"UTC"}catch(e){}
+        return fs.collection("groups").doc(group).collection("people").doc(me).set({
+          push:JSON.parse(JSON.stringify(sub)),remind:$("r-on").checked?$("r-time").value:"",nudge:$("n-on").checked?$("n-time").value:"",tz:tz
+        },{merge:true});
+      }).then(function(){status("Saved. Reminders are on for this phone.")})
+        .catch(function(e){if(e!==0)status("Couldn't turn on reminders. Check your connection and try again.")});
+    });
+    $("r-off").addEventListener("click",function(){
+      if(!me)return;
+      navigator.serviceWorker.ready.then(function(reg){return reg.pushManager.getSubscription()}).then(function(sub){return sub&&sub.unsubscribe()}).catch(function(){})
+        .then(function(){return fs.collection("groups").doc(group).collection("people").doc(me).update({push:firebase.firestore.FieldValue.delete(),remind:"",nudge:""})})
+        .then(function(){status("Reminders are off.")}).catch(function(){status("Couldn't turn off reminders. Check your connection.")});
+    });
     if(!group)showStart();
     else{
       me=lsGet("brp-person-"+group);
