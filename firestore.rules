@@ -1,0 +1,12 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Only someone who knows the long private group code in your link can read or write that group.
+    match /groups/{group}/people/{person} {
+      allow read: if group.size() >= 20;
+      allow create, update: if group.size() >= 20
+        && request.resource.data.keys().hasOnly(['name', 'done', 'updated'])
+        && request.resource.data.name is string && request.resource.data.name.size() <= 30;
+    }
+  }
+}

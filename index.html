@@ -1,0 +1,657 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Daily Reading">
+<meta name="theme-color" content="#1f5f7a">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="icon" href="icon-180.png">
+<link rel="manifest" href="manifest.json">
+<title>Daily Reading</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Literata:opsz,wght@7..72,500;7..72,600&family=Inter:wght@400;500;600&display=swap">
+<style>
+html{color-scheme:light}
+body{margin:0}
+:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+img{max-width:100%}
+
+/* Layout: one narrow column, phone first. The chapter is the hero; reading together, the note, the map and the prompts follow. */
+:root{
+  --bg:#f6f7f4; --surface:#ffffff; --ink:#1d2a33; --muted:#5d6b73; --line:#dde3e0;
+  --accent:#1f5f7a; --accent-ink:#ffffff; --accent-soft:#e3eef2;
+  --done:#3f7a4a; --done-soft:#e4f0e5; --warm:#a8661c; --warm-soft:#f6ead9;
+  --sea:#d4e3ea; --land:#efeadf; --land-line:#c9c0ac; --pin:#b4441f; --pin-faint:#a59f93;
+  --j-jesus:#b4441f; --j-early:#7a5aa6; --j-1:#1f7a6d; --j-2:#2a62b8; --j-3:#b07a12; --j-rome:#9c2f62;
+  --display:"Literata",Georgia,"Times New Roman",serif;
+  --body:"Inter",system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#12181c; --surface:#1a2228; --ink:#e6ecef; --muted:#9aa8b0; --line:#2b363d;
+  --accent:#6fb3cf; --accent-ink:#0d1a20; --accent-soft:#1d3440;
+  --done:#7cc08a; --done-soft:#1f3324; --warm:#e0a35b; --warm-soft:#3a2b18;
+  --sea:#14262f; --land:#2a2f2c; --land-line:#454c47; --pin:#f08a5d; --pin-faint:#6c7378;
+  --j-jesus:#f08a5d; --j-early:#b79ce0; --j-1:#5ccab8; --j-2:#7aa8f0; --j-3:#e6b44d; --j-rome:#e57aa8; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#12181c; --surface:#1a2228; --ink:#e6ecef; --muted:#9aa8b0; --line:#2b363d;
+  --accent:#6fb3cf; --accent-ink:#0d1a20; --accent-soft:#1d3440;
+  --done:#7cc08a; --done-soft:#1f3324; --warm:#e0a35b; --warm-soft:#3a2b18;
+  --sea:#14262f; --land:#2a2f2c; --land-line:#454c47; --pin:#f08a5d; --pin-faint:#6c7378;
+  --j-jesus:#f08a5d; --j-early:#b79ce0; --j-1:#5ccab8; --j-2:#7aa8f0; --j-3:#e6b44d; --j-rome:#e57aa8; color-scheme:dark}
+[hidden]{display:none!important}
+html,body{background:var(--bg)}
+body{color:var(--ink);font:16px/1.55 var(--body);
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 40px}
+.wrap{max-width:560px;margin:0 auto;display:flex;flex-direction:column;gap:22px}
+header{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.date{font-size:.9rem;color:var(--muted)}
+.streak{display:inline-flex;align-items:center;gap:6px;background:var(--warm-soft);color:var(--warm);
+  font-weight:600;font-size:.9rem;padding:6px 12px;border-radius:999px;font-variant-numeric:tabular-nums;white-space:nowrap}
+.streak svg{width:16px;height:16px}
+.banner{background:var(--accent-soft);color:var(--ink);border-radius:12px;padding:12px 14px;font-size:.92rem}
+.hero{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:22px 20px;display:flex;flex-direction:column;gap:14px}
+.eyebrow{font-size:.75rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600}
+h1{font-family:var(--display);font-weight:600;font-size:2.6rem;line-height:1.05;margin:0;text-wrap:balance}
+h2{font-family:var(--display);font-weight:600;font-size:1.15rem;margin:0}
+.actions{display:flex;gap:10px;flex-wrap:wrap}
+.btn{flex:1 1 140px;display:inline-flex;justify-content:center;align-items:center;gap:8px;min-height:48px;padding:0 16px;border-radius:12px;
+  font:600 1rem var(--body);text-decoration:none;cursor:pointer;border:1.5px solid var(--accent)}
+.btn:focus-visible,.chip:focus-visible,.day:focus-visible,.icon-btn:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.btn.read{background:transparent;color:var(--accent)}
+.btn.mark{background:var(--accent);color:var(--accent-ink)}
+.btn.mark.is-done{background:var(--done-soft);color:var(--done);border-color:var(--done)}
+.btn svg{width:18px;height:18px}
+.week{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+.day{display:flex;flex-direction:column;align-items:center;gap:4px;padding:8px 0;border-radius:10px;border:1.5px solid transparent;
+  background:none;color:var(--muted);font:500 .78rem var(--body);cursor:pointer}
+.day .dot{width:28px;height:28px;border-radius:50%;border:1.5px solid var(--line);display:grid;place-items:center;color:transparent}
+.day .dot svg{width:14px;height:14px}
+.day.done .dot{background:var(--done);border-color:var(--done);color:var(--surface)}
+.day.missed .dot{border-color:var(--warm);border-style:dashed}
+.day.today{color:var(--ink);font-weight:600}
+.day.sel{border-color:var(--accent);background:var(--accent-soft)}
+section.block{display:flex;flex-direction:column;gap:8px}
+.note{margin:0;max-width:65ch}
+.prompt{border-left:3px solid var(--warm);padding:2px 0 2px 14px}
+.prompt p{margin:0;font-family:var(--display);font-size:1.15rem;line-height:1.4}
+.prompt.talk{border-left-color:var(--accent)}
+
+/* Reading together */
+.people{display:flex;flex-direction:column;gap:8px;margin:0;padding:0;list-style:none}
+.person{display:flex;align-items:center;gap:12px;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px 14px}
+.avatar{width:34px;height:34px;border-radius:50%;background:var(--accent-soft);color:var(--accent);display:grid;place-items:center;font-weight:600;flex:none}
+.person .who{flex:1;min-width:0}
+.person .who b{display:block;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.person .who span{font-size:.85rem;color:var(--muted)}
+.status{font-size:.82rem;font-weight:600;padding:4px 10px;border-radius:999px;white-space:nowrap}
+.status.yes{background:var(--done-soft);color:var(--done)}
+.status.no{background:var(--warm-soft);color:var(--warm)}
+.hint{font-size:.9rem;color:var(--muted);margin:0}
+
+/* Map */
+.map-card{background:var(--surface);border:1px solid var(--line);border-radius:16px;overflow:hidden}
+.map-top{display:flex;flex-wrap:wrap;gap:8px;justify-content:space-between;align-items:center;padding:12px 12px 10px}
+.seg{display:inline-flex;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:3px}
+.seg button{border:0;background:none;color:var(--muted);font:600 .82rem var(--body);padding:6px 10px;border-radius:7px;cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--surface);color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.12)}
+.zoom{display:inline-flex;gap:6px}
+.icon-btn{width:34px;height:34px;border-radius:9px;border:1px solid var(--line);background:var(--bg);color:var(--ink);font:600 1.1rem var(--body);cursor:pointer;display:grid;place-items:center}
+.icon-btn svg{width:16px;height:16px}
+.map-box{position:relative;width:100%;aspect-ratio:4/3.4;max-width:100%;background:var(--sea);touch-action:none}
+.map-box svg{display:block;width:100%;height:100%}
+.map-box .land{fill:var(--land);stroke:var(--land-line);stroke-width:.6px;vector-effect:non-scaling-stroke}
+.map-box .lake{fill:var(--sea);stroke:var(--land-line);stroke-width:.5px;vector-effect:non-scaling-stroke}
+.map-box .river{fill:none;stroke:var(--sea);stroke-width:1.6px;vector-effect:non-scaling-stroke;stroke-linecap:round}
+.map-box .leg{fill:none;stroke-width:2.6px;vector-effect:non-scaling-stroke;stroke-linecap:round;stroke-linejoin:round}
+.map-box .leg.ahead{stroke-width:1.4px;stroke-dasharray:3 4;opacity:.45}
+.map-box .leg.dim{opacity:.35}
+.map-box .pin{cursor:pointer}
+.map-box .pin circle{stroke:var(--surface);stroke-width:1.5px}
+.map-box .pin text{font:600 11px var(--body);fill:var(--ink);paint-order:stroke;stroke:var(--land);stroke-width:3px;stroke-linejoin:round;pointer-events:none}
+.map-loading{position:absolute;inset:0;display:grid;place-items:center;color:var(--muted);font-size:.9rem}
+.map-foot{padding:10px 12px 14px;display:flex;flex-direction:column;gap:10px}
+.legend{display:flex;flex-wrap:wrap;gap:6px}
+.chip{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:var(--bg);color:var(--ink);border-radius:999px;
+  padding:5px 10px;font:500 .8rem var(--body);cursor:pointer}
+.chip i{width:14px;height:3px;border-radius:2px;display:inline-block}
+.chip[aria-pressed="false"]{opacity:.45}
+.chip.place[aria-pressed="true"]{border-color:var(--pin);background:var(--warm-soft)}
+.places{display:flex;flex-wrap:wrap;gap:6px}
+.count{font-size:.85rem;color:var(--muted);margin:0}
+.place-info{border-top:1px solid var(--line);padding:12px 12px 14px;display:flex;flex-direction:column;gap:4px}
+.place-info h3{font-family:var(--display);font-weight:600;font-size:1.1rem;margin:0}
+.place-info .modern{font-size:.85rem;color:var(--muted)}
+.place-info p{margin:4px 0 0}
+.place-info .links{display:flex;flex-wrap:wrap;gap:12px;margin-top:6px;font-size:.9rem}
+.place-info a{color:var(--accent);font-weight:600}
+.place-info .seen{font-size:.82rem;color:var(--muted)}
+
+.catchup{display:flex;flex-direction:column;gap:8px;margin:0;padding:0;list-style:none}
+.catchup button{width:100%;text-align:left;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px 14px;
+  color:var(--ink);font:500 .95rem var(--body);cursor:pointer}
+footer{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:10px;font-size:.82rem;color:var(--muted);border-top:1px solid var(--line);padding-top:14px}
+footer select{font:inherit;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:4px 6px}
+.sync{display:inline-flex;align-items:center;gap:6px}
+.sync i{width:8px;height:8px;border-radius:50%;background:var(--muted)}
+.sync.on i{background:var(--done)}
+@media (prefers-reduced-motion:no-preference){.btn,.day,.chip{transition:background .15s,border-color .15s,color .15s,opacity .15s}}
+
+/* setup and invite */
+.setup{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:20px;display:flex;flex-direction:column;gap:12px}
+.setup p{margin:0}
+.setup .btn{flex:none}
+.setup input{box-sizing:border-box;font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px 12px;min-height:44px;width:100%}
+.setup .row{display:flex;flex-wrap:wrap;gap:8px}
+.pick{display:flex;flex-direction:column;gap:8px}
+.pick button{text-align:left;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px 14px;color:var(--ink);font:500 1rem var(--body);cursor:pointer}
+.linkbtn{background:none;border:0;padding:0;color:var(--accent);font:600 .9rem var(--body);cursor:pointer;text-decoration:underline}
+.invite{display:flex;flex-direction:column;gap:8px}
+.invite code{display:block;word-break:break-all;background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:8px 10px;font-size:.8rem;color:var(--muted)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <span class="date" id="today-label">Today</span>
+    <span class="streak" id="streak" title="Weekdays in a row with the chapter read">
+      <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2c1 3.5 5 5.8 5 11a5 5 0 0 1-10 0c0-2.3 1-3.9 2.3-5.1.1 1.6.8 2.7 1.9 3.3C11 8.6 11.3 5.2 12 2z"/></svg>
+      <span id="streak-n">0</span>&nbsp;day streak
+    </span>
+  </header>
+
+  <div class="banner" id="banner" hidden></div>
+
+  <div class="hero">
+    <span class="eyebrow" id="eyebrow">Week 1 · Monday</span>
+    <h1 id="chapter">Mark 1</h1>
+    <div class="actions">
+      <a class="btn read" id="read-link" href="https://www.bible.com/bible/111/MRK.1.NIV" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 5h7a3 3 0 0 1 3 3v12a2 2 0 0 0-2-2H2zM22 5h-7a3 3 0 0 0-3 3v12a2 2 0 0 1 2-2h8z"/></svg>
+        Open in Bible app
+      </a>
+      <button class="btn mark" id="mark" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l5 5 9-10"/></svg>
+        <span id="mark-label">Mark as read</span>
+      </button>
+    </div>
+    <div class="week" id="week" aria-label="This week's readings"></div>
+  </div>
+
+  <section class="block" id="together">
+    <span class="eyebrow">Reading together</span>
+    <ul class="people" id="people"></ul>
+    <div class="setup" id="setup" hidden></div>
+    <div class="invite" id="invite" hidden>
+      <p class="hint" id="together-hint">Send your private link to your husband. When he opens it and adds his name, you'll see each other's reading here.</p>
+      <code id="invite-link"></code>
+      <div class="row" style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn read" type="button" id="share-link" style="flex:0 1 auto;min-height:40px">Send my private link</button>
+        <button class="linkbtn" type="button" id="switch-person">Not you? Switch person</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="block">
+    <span class="eyebrow">Historical note</span>
+    <p class="note" id="note">Loading the note for this chapter.</p>
+  </section>
+
+  <section class="block">
+    <span class="eyebrow">Where it happened</span>
+    <div class="map-card">
+      <div class="map-top">
+        <div class="seg" role="group" aria-label="Map view">
+          <button type="button" id="mode-today" aria-pressed="true">This chapter</button>
+          <button type="button" id="mode-all" aria-pressed="false">Everything I've read</button>
+        </div>
+        <div class="zoom">
+          <button class="icon-btn" type="button" id="zoom-in" aria-label="Zoom in">+</button>
+          <button class="icon-btn" type="button" id="zoom-out" aria-label="Zoom out">&minus;</button>
+          <button class="icon-btn" type="button" id="zoom-fit" aria-label="Fit to places"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg></button>
+        </div>
+      </div>
+      <div class="map-box" id="map-box"><div class="map-loading" id="map-loading">Loading the map</div></div>
+      <div class="map-foot">
+        <div class="places" id="place-chips" aria-label="Places in this chapter"></div>
+        <p class="count" id="map-count" hidden></p>
+        <div class="legend" id="legend" aria-label="Journeys"></div>
+      </div>
+      <div class="place-info" id="place-info" hidden>
+        <h3 id="pi-name"></h3>
+        <span class="modern" id="pi-modern"></span>
+        <p id="pi-desc"></p>
+        <span class="seen" id="pi-seen"></span>
+        <div class="links"><a id="pi-map" href="https://www.google.com/maps" target="_blank" rel="noopener">Open in Google Maps</a></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="block">
+    <span class="eyebrow" id="prompt-label">Reflect</span>
+    <div class="prompt"><p id="prompt">What does this show about God or Jesus?</p></div>
+  </section>
+
+  <section class="block">
+    <span class="eyebrow">Talk about together</span>
+    <div class="prompt talk"><p id="talk">Loading today's question.</p></div>
+  </section>
+
+  <section class="block" id="catchup-wrap" hidden>
+    <h2>Catch up this weekend</h2>
+    <ul class="catchup" id="catchup"></ul>
+  </section>
+
+  <footer>
+    <label>Bible version
+      <select id="version">
+        <option>NIV</option><option>ESV</option><option>NLT</option><option>NKJV</option><option>KJV</option><option>CSB</option><option>NASB</option>
+      </select>
+    </label>
+    <span class="sync" id="sync"><i></i><span id="sync-label">Saved on this device</span></span>
+  </footer>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="config.js"></script>
+<script>
+(function(){
+  var BOOKS=[["Mark",16],["James",5],["Luke",24],["Acts",28],["Galatians",6],["1 Thessalonians",5],["2 Thessalonians",3],["1 Corinthians",16],["2 Corinthians",13],["Romans",16],["John",21],["Ephesians",6],["Philippians",4],["Colossians",4],["Philemon",1],["Matthew",28],["1 Timothy",6],["2 Timothy",4],["Titus",3],["Hebrews",13],["1 Peter",5],["2 Peter",3],["Jude",1],["1 John",5],["2 John",1],["3 John",1],["Revelation",22]];
+  var CODES=["MRK","JAS","LUK","ACT","GAL","1TH","2TH","1CO","2CO","ROM","JHN","EPH","PHP","COL","PHM","MAT","1TI","2TI","TIT","HEB","1PE","2PE","JUD","1JN","2JN","3JN","REV"];
+  var CH=[],REF=[],IDX={};
+  BOOKS.forEach(function(b,n){for(var i=1;i<=b[1];i++){IDX[b[0]+" "+i]=CH.length;CH.push(b[0]+" "+i);REF.push(CODES[n]+"."+i)}});
+  // YouVersion (Bible app) version ids; bible.com links open the app on a phone where it is installed
+  var YV={NIV:111,ESV:59,NLT:116,NKJV:114,KJV:1,CSB:1713,NASB:2692};
+  var DAYS=["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"];
+  var PROMPTS=["What does this show about God or Jesus?","Which verse stood out to you?","Is there a promise or a command here?","How would the first readers have understood it?","What is one thing to do or pray about?"];
+  var WEEKEND="What is one thing to remember from this week?";
+  var START=new Date(2026,10,23); // Monday, November 23, 2026
+  var MS=86400000;
+  var CHECK='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"/></svg>';
+  var JCOLOR={"jesus":"var(--j-jesus)","paul-early":"var(--j-early)","paul-1":"var(--j-1)","paul-2":"var(--j-2)","paul-3":"var(--j-3)","paul-rome":"var(--j-rome)"};
+
+  function $(id){return document.getElementById(id)}
+  function midnight(d){return new Date(d.getFullYear(),d.getMonth(),d.getDate())}
+  function iso(d){return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0")}
+  var now=midnight(new Date());
+  var diff=Math.round((now-START)/MS);
+  var started=diff>=0;
+  var week=started?Math.floor(diff/7):0;
+  var dow=started?diff%7:0;              // 0 = Monday ... 6 = Sunday
+  var finished=week>=52;
+  if(finished){week=51;dow=6}
+  var isWeekend=started&&dow>=5;
+  var dueIdx=!started?-1:week*5+Math.min(dow,4);
+
+  var state={done:{}};
+  var sel=null, notes={}, talk={}, geo=null, others=[], names={};
+  var save=function(){};
+
+  try{var c=localStorage.getItem("brp-progress");if(c)state=JSON.parse(c)||state}catch(e){}
+  if(!state.done)state.done={};
+  var version="NIV";
+  try{version=localStorage.getItem("brp-version")||"NIV"}catch(e){}
+  var vSel=$("version");vSel.value=version;
+  vSel.addEventListener("change",function(){version=vSel.value;try{localStorage.setItem("brp-version",version)}catch(e){}render()});
+
+  function has(done,i){return Object.prototype.hasOwnProperty.call(done,String(i))}
+  function isDone(i){return has(state.done,i)}
+  function streakOf(done){
+    if(dueIdx<0)return 0;
+    var i=dueIdx;
+    // today's chapter, or this week's on a weekend, can still be caught up, so it doesn't break the streak
+    while(i>=0&&!has(done,i)&&(i===dueIdx||(isWeekend&&i>=week*5)))i--;
+    var n=0;while(i>=0&&has(done,i)){n++;i--}
+    return n;
+  }
+  function defaultSel(){
+    if(!started)return 0;
+    if(!isWeekend)return week*5+dow;
+    for(var d=0;d<5;d++){if(!isDone(week*5+d))return week*5+d}
+    return week*5+4;
+  }
+
+  function render(){
+    if(sel===null)sel=defaultSel();
+    var w=Math.floor(sel/5),d=sel%5,name=CH[sel];
+    $("today-label").textContent=now.toLocaleDateString(undefined,{weekday:"long",month:"long",day:"numeric"});
+    $("streak-n").textContent=streakOf(state.done);
+
+    var banner=$("banner");
+    var thisWeekLeft=0;if(started)for(var k2=week*5;k2<=dueIdx;k2++){if(!isDone(k2))thisWeekLeft++}
+    if(!started){banner.hidden=false;banner.textContent="Your plan starts Monday, November 23. Here is a preview of the first chapter."}
+    else if(finished){banner.hidden=false;banner.textContent="You have reached the end of the 52-week plan. Well done!"}
+    else if(isWeekend){banner.hidden=false;banner.textContent=thisWeekLeft?"It's the weekend: a good time to catch up on "+thisWeekLeft+(thisWeekLeft===1?" chapter":" chapters")+" from this week.":"You read every chapter this week. Enjoy your weekend."}
+    else banner.hidden=true;
+
+    var isToday=started&&!isWeekend&&sel===dueIdx;
+    $("eyebrow").textContent="Week "+(w+1)+" · "+DAYS[d]+(isToday?" · Today":"");
+    $("chapter").textContent=name;
+    $("read-link").href="https://www.bible.com/bible/"+(YV[version]||111)+"/"+REF[sel]+"."+(YV[version]?version:"NIV");
+    var m=$("mark"),done=isDone(sel);
+    m.classList.toggle("is-done",done);
+    $("mark-label").textContent=done?"Read":"Mark as read";
+    m.setAttribute("aria-pressed",done?"true":"false");
+
+    var wk=$("week");wk.innerHTML="";
+    for(var i=0;i<5;i++){
+      var idx=w*5+i,b=document.createElement("button");
+      b.type="button";b.className="day";
+      if(isDone(idx))b.classList.add("done");
+      else if(idx<=dueIdx&&!(idx===dueIdx&&!isWeekend))b.classList.add("missed");
+      if(started&&!isWeekend&&idx===dueIdx)b.classList.add("today");
+      if(idx===sel)b.classList.add("sel");
+      b.innerHTML='<span class="dot">'+CHECK+'</span><span>'+DAYS[i].slice(0,3)+'</span>';
+      b.setAttribute("aria-label",DAYS[i]+", "+CH[idx]+(isDone(idx)?", read":""));
+      (function(x){b.addEventListener("click",function(){sel=x;placeSel=null;render();mapFrame(true)})})(idx);
+      wk.appendChild(b);
+    }
+
+    $("note").textContent=notes[name]||"The note for this chapter is loading.";
+    var showWeekend=isWeekend&&w===week;
+    $("prompt-label").textContent=showWeekend?"Weekend reflection":"Reflect · "+DAYS[d];
+    $("prompt").textContent=showWeekend?WEEKEND:PROMPTS[d];
+    $("talk").textContent=talk[name]||"Loading today's question.";
+
+    var cw=$("catchup-wrap"),cl=$("catchup");cl.innerHTML="";
+    var missed=[];if(isWeekend)for(var j=week*5;j<week*5+5;j++){if(!isDone(j))missed.push(j)}
+    cw.hidden=!missed.length;
+    missed.forEach(function(j){
+      var li=document.createElement("li"),bt=document.createElement("button");
+      bt.type="button";bt.textContent=DAYS[j%5]+": "+CH[j];
+      bt.addEventListener("click",function(){sel=j;placeSel=null;render();mapFrame(true);window.scrollTo({top:0,behavior:"smooth"})});
+      li.appendChild(bt);cl.appendChild(li);
+    });
+
+    renderTogether();
+    mapRender();
+  }
+
+  function renderTogether(){
+    var ul=$("people");ul.innerHTML="";
+    var ref=Math.max(sel,0);
+    others.forEach(function(o){
+      var nm=names[o.id]||"Your reading partner";
+      var li=document.createElement("li");li.className="person";
+      var av=document.createElement("span");av.className="avatar";av.textContent=nm.trim().charAt(0).toUpperCase()||"?";
+      var who=document.createElement("div");who.className="who";
+      var b=document.createElement("b");b.textContent=nm;
+      var sp=document.createElement("span");var s=streakOf(o.done);sp.textContent=s+" day streak";
+      who.appendChild(b);who.appendChild(sp);
+      var st=document.createElement("span");var y=has(o.done,ref);
+      st.className="status "+(y?"yes":"no");st.textContent=(y?"Read ":"Not yet: ")+CH[ref];
+      li.appendChild(av);li.appendChild(who);li.appendChild(st);ul.appendChild(li);
+    });
+    $("together-hint").hidden=others.length>0;
+  }
+
+  document.getElementById("mark").addEventListener("click",function(){
+    var key=String(sel),next={};
+    for(var k in state.done)next[k]=state.done[k];
+    if(next[key])delete next[key];else next[key]=iso(new Date());
+    state={done:next};
+    try{localStorage.setItem("brp-progress",JSON.stringify(state))}catch(e){}
+    render();save();
+  });
+
+  /* ---------- Map ---------- */
+  var mapMode="today", placeSel=null, hiddenJ={};
+  var svg=null,gBase=null,gLegs=null,gPins=null,proj=null,zoom=null,curT=null,W=0,H=0;
+
+  function readSet(){ // chapters read, by name
+    var s={};for(var k in state.done){var n=CH[+k];if(n)s[n]=1}return s;
+  }
+  function placesFor(name){return (geo&&geo.chapters[name])||[]}
+  function pt(p){var ll=typeof p==="string"?geo.places[p].ll:p;return proj([ll[1],ll[0]])}
+  function chaptersWith(key){var out=[];CH.forEach(function(n){if(placesFor(n).indexOf(key)>=0)out.push(n)});return out}
+
+  function mapInit(){
+    var box=$("map-box");
+    W=box.clientWidth||360;H=box.clientHeight||300;
+    proj=d3.geoMercator().fitExtent([[0,0],[W,H]],{type:"MultiPoint",coordinates:[[11,28],[46,44]]});
+    var path=d3.geoPath(proj);
+    svg=d3.select(box).append("svg").attr("viewBox","0 0 "+W+" "+H).attr("role","img").attr("aria-label","Map of the lands of the Bible");
+    gBase=svg.append("g");
+    geo.base.land.forEach(function(rings){gBase.append("path").attr("class","land").attr("d",path({type:"Polygon",coordinates:rings}))});
+    geo.base.lakes.forEach(function(rings){gBase.append("path").attr("class","lake").attr("d",path({type:"Polygon",coordinates:rings}))});
+    geo.base.rivers.forEach(function(r){gBase.append("path").attr("class","river").attr("d",path({type:"LineString",coordinates:r.c}))});
+    gLegs=gBase.append("g");
+    gPins=svg.append("g");
+    curT=d3.zoomIdentity;
+    zoom=d3.zoom().scaleExtent([1,90]).translateExtent([[-W*.2,-H*.2],[W*1.2,H*1.2]]).on("zoom",function(ev){curT=ev.transform;gBase.attr("transform",curT);drawPins()});
+    svg.call(zoom).on("dblclick.zoom",null);
+    $("map-loading").remove();
+    buildLegend();
+    mapFrame(false);
+  }
+
+  function buildLegend(){
+    var lg=$("legend");lg.innerHTML="";
+    geo.journeys.forEach(function(j){
+      var b=document.createElement("button");b.type="button";b.className="chip";
+      b.setAttribute("aria-pressed",hiddenJ[j.id]?"false":"true");
+      b.innerHTML='<i style="background:'+JCOLOR[j.id]+'"></i>';b.appendChild(document.createTextNode(j.name));
+      b.addEventListener("click",function(){hiddenJ[j.id]=!hiddenJ[j.id];b.setAttribute("aria-pressed",hiddenJ[j.id]?"false":"true");drawLegs()});
+      lg.appendChild(b);
+    });
+  }
+
+  function mapFrame(animate){
+    if(!svg)return;
+    var keys;
+    if(placeSel)keys=[placeSel];
+    else if(mapMode==="today")keys=placesFor(CH[sel]);
+    else{var r=readSet(),s={};for(var n in r)placesFor(n).forEach(function(k){s[k]=1});keys=Object.keys(s);if(!keys.length)keys=placesFor(CH[sel])}
+    var xs=[],ys=[];keys.forEach(function(k){var p=pt(k);xs.push(p[0]);ys.push(p[1])});
+    if(!xs.length){xs=[W/2];ys=[H/2]}
+    var x0=Math.min.apply(0,xs),x1=Math.max.apply(0,xs),y0=Math.min.apply(0,ys),y1=Math.max.apply(0,ys);
+    var minSpan=(pt([31,36.5])[0]-pt([31,35])[0]); // about 1.5 degrees of longitude
+    var cx=(x0+x1)/2,cy=(y0+y1)/2,sw=Math.max(x1-x0,minSpan),sh=Math.max(y1-y0,minSpan*.8);
+    var k=Math.min(90,Math.max(1,.7*Math.min(W/sw,H/sh)));
+    var t=d3.zoomIdentity.translate(W/2-k*cx,H/2-k*cy).scale(k);
+    (animate&&!matchMedia("(prefers-reduced-motion: reduce)").matches?svg.transition().duration(600):svg).call(zoom.transform,t);
+  }
+
+  function drawLegs(){
+    if(!gLegs)return;
+    gLegs.selectAll("*").remove();
+    var read=readSet(),cur=CH[sel],line=d3.line();
+    geo.journeys.forEach(function(j){
+      if(hiddenJ[j.id])return;
+      j.legs.forEach(function(l){
+        var isRead=!!read[l.ch],isCur=l.ch===cur,cls="leg";
+        if(mapMode==="today"){if(!isCur&&!isRead)return;if(!isCur)cls+=" dim"}
+        else if(!isRead&&!isCur)cls+=" ahead";
+        gLegs.append("path").attr("class",cls).attr("stroke",JCOLOR[j.id]).attr("d",line(l.pts.map(pt)));
+      });
+    });
+  }
+
+  function drawPins(){
+    if(!gPins)return;
+    gPins.selectAll("*").remove();
+    var cur=placesFor(CH[sel]),read=readSet(),seen={};
+    for(var n in read)placesFor(n).forEach(function(k){seen[k]=1});
+    var keys=Object.keys(geo.places),list=[];
+    keys.forEach(function(k){
+      var main=mapMode==="today"?cur.indexOf(k)>=0:(seen[k]||cur.indexOf(k)>=0);
+      var faint=!main&&(mapMode==="all"||seen[k]);
+      if(!main&&!faint&&k!==placeSel)return;
+      list.push({k:k,main:main||k===placeSel});
+    });
+    // decide labels first, most important places first, skipping any that would overlap
+    var boxes=[],labelOK={};
+    function short(n){return n.replace(/ \(.+\)$/,"").replace(/ and Jacob's well$/,"").replace(/ at Bethany beyond the Jordan$/,"")}
+    list.slice().sort(function(a,b){return (b.k===placeSel)-(a.k===placeSel)||(cur.indexOf(b.k)>=0)-(cur.indexOf(a.k)>=0)}).forEach(function(o){
+      if(!o.main)return;
+      var xy=pt(o.k),x=curT.applyX(xy[0]),y=curT.applyY(xy[1]);
+      if(!(mapMode==="today"||o.k===placeSel||curT.k>6))return;
+      var r={x:x-4,y:y-9,w:14+short(geo.places[o.k].n).length*6.3,h:16};
+      for(var i=0;i<boxes.length;i++){var b=boxes[i];if(r.x<b.x+b.w&&b.x<r.x+r.w&&r.y<b.y+b.h&&b.y<r.y+r.h)return}
+      boxes.push(r);labelOK[o.k]=1;
+    });
+    list.sort(function(a,b){return a.main-b.main});
+    list.forEach(function(o){
+      var p=geo.places[o.k],xy=pt(o.k),x=curT.applyX(xy[0]),y=curT.applyY(xy[1]);
+      if(x<-20||y<-20||x>W+20||y>H+20)return;
+      var g=gPins.append("g").attr("class","pin").attr("transform","translate("+x+","+y+")")
+        .attr("tabindex",0).attr("role","button").attr("aria-label",p.n);
+      g.append("circle").attr("r",o.k===placeSel?8:(o.main?6:3.5)).attr("fill",o.main?"var(--pin)":"var(--pin-faint)");
+      if(labelOK[o.k])g.append("text").attr("x",9).attr("y",4).text(short(p.n));
+      g.on("click",function(ev){ev.stopPropagation();choosePlace(o.k,false)})
+       .on("keydown",function(ev){if(ev.key==="Enter"||ev.key===" "){ev.preventDefault();choosePlace(o.k,false)}});
+    });
+  }
+
+  function choosePlace(k,frame){
+    placeSel=placeSel===k?null:k;
+    showPlace();renderChips();drawPins();
+    if(frame)mapFrame(true);
+  }
+  function showPlace(){
+    var box=$("place-info");
+    if(!placeSel){box.hidden=true;return}
+    var p=geo.places[placeSel];box.hidden=false;
+    $("pi-name").textContent=p.n;$("pi-modern").textContent="Today: "+p.m;$("pi-desc").textContent=p.d;
+    var chs=chaptersWith(placeSel);
+    $("pi-seen").textContent=chs.length?"In your plan: "+chs.slice(0,8).join(", ")+(chs.length>8?" and "+(chs.length-8)+" more":""):"";
+    $("pi-map").href="https://www.google.com/maps/search/?api=1&query="+p.ll[0]+","+p.ll[1];
+  }
+  function renderChips(){
+    var box=$("place-chips");box.innerHTML="";
+    if(!geo)return;
+    var cur=placesFor(CH[sel]);
+    cur.forEach(function(k){
+      var b=document.createElement("button");b.type="button";b.className="chip place";
+      b.setAttribute("aria-pressed",placeSel===k?"true":"false");
+      b.textContent=geo.places[k].n;
+      b.addEventListener("click",function(){choosePlace(k,true)});
+      box.appendChild(b);
+    });
+    var cnt=$("map-count");
+    if(mapMode==="all"){
+      var read=readSet(),seen={};for(var n in read)placesFor(n).forEach(function(k){seen[k]=1});
+      var total=Object.keys(geo.places).length,got=Object.keys(seen).length;
+      cnt.hidden=false;cnt.textContent="You've visited "+got+" of "+total+" places so far. Dashed lines show journeys still ahead.";
+    }else cnt.hidden=true;
+  }
+  function mapRender(){
+    if(!geo)return;
+    if(placeSel&&mapMode==="today"&&placesFor(CH[sel]).indexOf(placeSel)<0)placeSel=null;
+    renderChips();showPlace();drawLegs();drawPins();
+  }
+  function setMode(m){
+    mapMode=m;$("mode-today").setAttribute("aria-pressed",m==="today");$("mode-all").setAttribute("aria-pressed",m==="all");
+    placeSel=null;mapRender();mapFrame(true);
+  }
+  $("mode-today").addEventListener("click",function(){setMode("today")});
+  $("mode-all").addEventListener("click",function(){setMode("all")});
+  $("zoom-in").addEventListener("click",function(){svg&&svg.transition().duration(250).call(zoom.scaleBy,1.6)});
+  $("zoom-out").addEventListener("click",function(){svg&&svg.transition().duration(250).call(zoom.scaleBy,1/1.6)});
+  $("zoom-fit").addEventListener("click",function(){placeSel=null;mapRender();mapFrame(true)});
+
+  render();
+
+  function getJSON(u){return fetch(u).then(function(r){if(!r.ok)throw new Error(r.status);return r.json()})}
+  getJSON("notes.json").then(function(j){notes=j;render()}).catch(function(){$("note").textContent="The historical note couldn't load. Check your connection and reopen the page."});
+  getJSON("talk.json").then(function(j){talk=j;render()}).catch(function(){$("talk").textContent="Today's question couldn't load. Check your connection and reopen the page."});
+  Promise.all([getJSON("places.json"),getJSON("base.json")]).then(function(r){
+    geo=r[0];geo.base=r[1];
+    if(window.d3){mapInit();mapRender()}else $("map-loading").textContent="The map couldn't load. Check your connection and reopen the page.";
+  }).catch(function(){var l=$("map-loading");if(l)l.textContent="The map couldn't load. Check your connection and reopen the page."});
+
+  /* ---------- Sync and reading together (Firebase, private group code) ---------- */
+  var CFG=window.FIREBASE_CONFIG||null;
+  function rand(n){var a="abcdefghijkmnpqrstuvwxyz23456789",s="",b=new Uint8Array(n);crypto.getRandomValues(b);for(var i=0;i<n;i++)s+=a[b[i]%a.length];return s}
+  function lsGet(k){try{return localStorage.getItem(k)}catch(e){return null}}
+  function lsSet(k,v){try{localStorage.setItem(k,v)}catch(e){}}
+  function groupFromHash(){var m=/^#g=([a-z0-9]{20,40})$/.exec(location.hash||"");return m?m[1]:null}
+  var group=groupFromHash()||lsGet("brp-group");
+  if(group){lsSet("brp-group",group);if(!groupFromHash())history.replaceState(null,"","#g="+group)}
+  var setupEl=$("setup"),inviteEl=$("invite");
+  function linkFor(g){return location.origin+location.pathname+"#g="+g}
+  function el(tag,props,kids){var e=document.createElement(tag);for(var k in props){if(k==="text")e.textContent=props[k];else if(k==="on")e.addEventListener("click",props[k]);else e.setAttribute(k,props[k])}(kids||[]).forEach(function(c){e.appendChild(c)});return e}
+
+  if(!CFG||!window.firebase){
+    $("sync-label").textContent="Saved on this device";
+  }else{
+    firebase.initializeApp(CFG);
+    var fs=firebase.firestore();
+    var me=null,unsub=null;
+
+    function showStart(){
+      inviteEl.hidden=true;setupEl.hidden=false;setupEl.innerHTML="";
+      setupEl.appendChild(el("p",{text:"Read together and keep your progress on every device. Start a private reading group, then send the link to your husband."}));
+      setupEl.appendChild(el("button",{class:"btn mark",type:"button",text:"Start our reading group",on:function(){group=rand(24);lsSet("brp-group",group);history.replaceState(null,"","#g="+group);showWho([])}}));
+      setupEl.appendChild(el("p",{class:"hint",text:"Got a link from your husband? Just open it on this phone."}));
+    }
+    function showWho(people){
+      inviteEl.hidden=true;setupEl.hidden=false;setupEl.innerHTML="";
+      if(people.length){
+        setupEl.appendChild(el("p",{text:"Who's reading on this phone?"}));
+        var pick=el("div",{class:"pick"});
+        people.forEach(function(p){pick.appendChild(el("button",{type:"button",text:p.name||"Unnamed reader",on:function(){choose(p.id)}}))});
+        setupEl.appendChild(pick);
+        setupEl.appendChild(el("p",{class:"hint",text:"Or add yourself:"}));
+      }else setupEl.appendChild(el("p",{text:"What's your first name? Your husband will see it next to your reading."}));
+      var inp=el("input",{id:"name-input",type:"text",maxlength:"30",placeholder:"Your first name",autocomplete:"given-name"});
+      setupEl.appendChild(inp);
+      setupEl.appendChild(el("button",{class:"btn mark",type:"button",text:"Save my name",on:function(){
+        var n=inp.value.trim();if(!n){inp.focus();return}
+        var id=rand(16);
+        fs.collection("groups").doc(group).collection("people").doc(id).set({name:n,done:state.done,updated:iso(new Date())})
+          .then(function(){choose(id)}).catch(function(){$("sync-label").textContent="Couldn't connect. Check your connection."});
+      }}));
+    }
+    function choose(id){me=id;lsSet("brp-person-"+group,id);setupEl.hidden=true;startSync()}
+
+    save=function(){
+      if(!me)return;
+      fs.collection("groups").doc(group).collection("people").doc(me).set({name:names[me]||"",done:state.done,updated:iso(new Date())},{merge:true})
+        .catch(function(){$("sync-label").textContent="Couldn't sync. Saved on this device"});
+    };
+
+    var first=true;
+    function startSync(){
+      if(unsub)unsub();
+      inviteEl.hidden=false;$("invite-link").textContent=linkFor(group);
+      unsub=fs.collection("groups").doc(group).collection("people").onSnapshot(function(snap){
+        $("sync").classList.add("on");$("sync-label").textContent="Synced";
+        var mine=null,list=[];
+        snap.docs.forEach(function(d){var data=d.data()||{};names[d.id]=data.name||"";if(d.id===me)mine=data.done||{};else list.push({id:d.id,done:data.done||{}})});
+        if(mine===null){me=null;showWho(snap.docs.map(function(d){return {id:d.id,name:(d.data()||{}).name}}));return}
+        if(first){
+          first=false;var merged={},changed=false,k;
+          for(k in mine)merged[k]=mine[k];
+          for(k in state.done){if(!merged[k]){merged[k]=state.done[k];changed=true}}
+          state={done:merged};if(changed)save();
+        }else if(!snap.metadata.hasPendingWrites)state={done:mine};
+        lsSet("brp-progress",JSON.stringify(state));
+        others=list;render();
+      },function(){$("sync-label").textContent="Couldn't connect. Saved on this device"});
+    }
+
+    $("share-link").addEventListener("click",function(){
+      var url=linkFor(group);
+      if(navigator.share){navigator.share({title:"Daily Reading",text:"Our Bible reading plan",url:url}).catch(function(){})}
+      else if(navigator.clipboard){navigator.clipboard.writeText(url).then(function(){$("share-link").textContent="Link copied"}).catch(function(){})}
+    });
+    $("switch-person").addEventListener("click",function(){
+      if(unsub)unsub();unsub=null;me=null;first=true;
+      fs.collection("groups").doc(group).collection("people").get().then(function(s){showWho(s.docs.map(function(d){return {id:d.id,name:(d.data()||{}).name}}))});
+    });
+
+    if(!group)showStart();
+    else{
+      me=lsGet("brp-person-"+group);
+      if(me)startSync();
+      else fs.collection("groups").doc(group).collection("people").get().then(function(s){showWho(s.docs.map(function(d){return {id:d.id,name:(d.data()||{}).name}}))}).catch(function(){showWho([])});
+    }
+  }
+})();
+</script>
+</body>
+</html>
